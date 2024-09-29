@@ -18,7 +18,7 @@
       </el-row>
     </el-header>
     <el-container style="height: calc(100% - 60px);">
-      <el-aside width="250px" style="padding: 20px;">
+      <el-aside width="250px" style="padding: 20px;" v-if="isAsideVisible">
         <div style="display: flex; align-items: center;">
           作答进度：
           <div class="progress-bar-container">
@@ -44,22 +44,34 @@
         </div>
       </el-aside>
       <el-container>
-        <el-main>
-          <el-form :model="form" ref="form" v-loading="formLoading">
-            <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-              :label="currentTitleItem.itemOrder + '.'" class="exam-question-item"
-              :id="'question-' + currentTitleItem.itemOrder">
-              <div class="parent-container">
-
-              <QuestionInfo :qType="currentTitleItem.questionType" 
-              :question="currentTitleItem"
-                :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" 
-                :scale="scale"
-                />
-              </div>
-            </el-form-item>
-          </el-form>
+        <el-main style="height: 100%;">
+          <el-row style="height: 25px;">一、最佳选择题（共**题，每题**分。每题的备选项中，只有1个最符合题意）</el-row>
+          <el-row style="height: 100%;">
+            <el-col :span="12" style="height: 100%; overflow: auto;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionTittle :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                      :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+            <el-col :span="12" style="height: 100%; overflow: auto;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionSelect :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                      :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
         </el-main>
+
         <el-footer>
           <el-form :model="form" ref="form" v-loading="formLoading">
             <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
@@ -72,15 +84,40 @@
         <el-footer>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex;">
+              <el-button type="primary" @click="hiddenAside" plain style="padding: 0px;">
+                <i :class="{
+                  'el-icon-arrow-right': this.isAsideVisible == false,
+                  'el-icon-arrow-left': this.isAsideVisible == true
+                }"></i>
+              </el-button>
               <el-button @click="previousQuestion">上一题</el-button>
               <el-button type="primary" @click="nextQuestion">下一题</el-button>
             </div>
             <div style="display: flex;">
               <el-button type="warning" @click="zoomOut" plain>缩小</el-button>
               <el-button type="warning" @click="zoomIn" plain>放大</el-button>
-              <el-button type="warning" @click="mark" plain icon="el-icon-star-off">标记</el-button>
+              <el-button type="warning" @click="markQuestion" plain>
+                <i :class="{
+                  'el-icon-star-off': this.answer.answerItems[this.activeQuestionIndex]?.marked == false,
+                  'el-icon-star-on': this.answer.answerItems[this.activeQuestionIndex]?.marked
+                }"></i>
+                标记</el-button>
               <el-button type="warning" @click="showCalculator" plain>计算器</el-button>
-              <el-button type="primary" icon="el-icon-setting" @click="openSettings"></el-button>
+
+              <el-dropdown @command="settingHandleCommand" style="margin-left: 10px;">
+                <el-button type="primary" icon="el-icon-setting" @click="openSettings">
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="autoNextExam">自动切换下一篇题</el-dropdown-item>
+                  <el-dropdown-item command="manualNextExam">手动切换下一篇题</el-dropdown-item>
+                  <el-dropdown-item command="scale25"> 显示比例25%</el-dropdown-item>
+                  <el-dropdown-item command="scale50">显示比例50%</el-dropdown-item>
+                  <el-dropdown-item command="scale100">原始比例</el-dropdown-item>
+                  <el-dropdown-item command="scale150">显示比例150%</el-dropdown-item>
+                  <el-dropdown-item command="scale200">显示比例200%</el-dropdown-item>
+                  <el-dropdown-item command="hiddenAside">切换显示</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </div>
         </el-footer>
@@ -91,13 +128,14 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { formatSeconds } from '@/utils'
-import QuestionInfo from '../components/QuestionInfo'
+import QuestionTittle from '../components/QuestionTittle'
 import QuestionEdit from '../components/QuestionEdit'
+import QuestionSelect from '../components/QuestionSelect'
 import examPaperApi from '@/api/examPaper'
 import examPaperAnswerApi from '@/api/examPaperAnswer'
 
 export default {
-  components: { QuestionEdit, QuestionInfo },
+  components: { QuestionEdit, QuestionTittle, QuestionSelect },
   data() {
     return {
       form: {},
@@ -115,33 +153,59 @@ export default {
       status_current: 2,
       status_marked: true,
       questionTypeMap: {
-        0: '单选题',
-        1: '多选题',
-        2: '填空题',
+        1: '最佳选择题',
+        2: '多项选择题',
         3: '判断题',
         4: '问答题'
       },
-      scale: 1, // 初始缩放比例
-
+      scale: 1,
+      exam_id: null,
+      userExamIdStartTime: null,
+      userExamIdData: null,
+      autoNextExam: false,
+      suggestTime: 0,
+      userExamId: null,
+      isAsideVisible: true
     }
   },
   created() {
-    let id = this.$route.query.id;
-    if (id && parseInt(id) !== 0) {
-      this.formLoading = true;
-      examPaperApi.select(id).then(re => {
-        this.form = re.response;
-        this.remainTime = re.response.suggestTime * 60;
-        let savedData = localStorage.getItem(this.userName + '_examData');
+    this.exam_id = this.$route.query.id
+    if (this.exam_id && parseInt(this.exam_id) !== 0) {
+      this.userExamId = this.userName + '_' + this.$route.query.id
+      this.userExamIdStartTime = this.userExamId + '_remainTime'
+      this.userExamIdData = this.userExamId + '_examData'
+      if (!localStorage.getItem(this.userExamIdStartTime)) {
+        console.log('currentTime:', this.getCurrentTimestamp())
+        localStorage.setItem(this.userExamIdStartTime, this.getCurrentTimestamp())
+      }
+      this.formLoading = true
+      examPaperApi.select(this.exam_id).then(re => {
+        this.form = re.response
+        let savedData = localStorage.getItem(this.userExamIdData)
+        this.suggestTime = re.response.suggestTime * 60
         if (savedData) {
-          this.loadFromLocalStorage(); // 确保这里没有拼写错误
+          this.loadFromLocalStorage()
+          let localAnswerNum = this.answer.answerItems.length
+          let apiAnswerNum = this.form.titleItems.reduce((acc, titleItem) => {
+            return acc + titleItem.questionItems.length
+          }, 0)
+          if (localAnswerNum !== apiAnswerNum) {
+            this.$alert('本地答案与服务器答案不匹配，请重新开始答题', '通知', {
+              confirmButtonText: '确定'
+            })
+            this.answer.answerItems = []
+            this.initAnswer()
+            this.setActiveQuestion(0)
+          }
         } else {
-          this.initAnswer();
-          this.setActiveQuestion(0);
+          this.remainTime = this.suggestTime
+          this.initAnswer()
+          this.setActiveQuestion(0)
+          this.saveToLocalStorage()
         }
-        this.timeReduce();
-        this.formLoading = false;
-      });
+        this.timeReduce()
+        this.formLoading = false
+      })
     } else {
       this.$router.push('/index')
     }
@@ -151,20 +215,28 @@ export default {
   },
   methods: {
     loadFromLocalStorage() {
-      const savedData = localStorage.getItem(this.userName + '_examData');
+      const savedData = localStorage.getItem(this.userExamIdData)
       if (savedData) {
-        const { activeQuestionIndex, answerItems } = JSON.parse(savedData);
-        this.activeQuestionIndex = activeQuestionIndex;
-        this.answer.answerItems = answerItems;
+        const { activeQuestionIndex, answerItems } = JSON.parse(savedData)
+        this.activeQuestionIndex = activeQuestionIndex
+        this.answer.answerItems = answerItems
+      }
+      const savedStartTime = localStorage.getItem(this.userExamIdStartTime)
+      if (savedStartTime) {
+        const startTime = parseInt(savedStartTime, 10)
+
+        this.remainTime = startTime + this.suggestTime - this.getCurrentTimestamp()
       }
     },
     formatSeconds(theTime) {
       return formatSeconds(theTime)
     },
     timeReduce() {
+      console.log('remainTime:', this.remainTime)
       this.timer = setInterval(() => {
         if (this.remainTime <= 0) {
-          this.submitForm()
+          alert('时间到！')
+          this.submitForm(true)
         } else {
           ++this.answer.doTime
           --this.remainTime
@@ -175,17 +247,19 @@ export default {
       return this.enumFormat(this.doCompletedTag, completed)
     },
     setActiveQuestion(index) {
-      this.answer.answerItems[this.activeQuestionIndex].status = this.answer.answerItems[this.activeQuestionIndex].pre_status; // 更新上一个题目的状态
+      if (index < 0 || index >= this.answer.answerItems.length) {
+        return
+      }
+      this.answer.answerItems[this.activeQuestionIndex].status = this.answer.answerItems[this.activeQuestionIndex].pre_status
       this.answer.answerItems.forEach((item, itemIndex) => {
-        item.status = index === itemIndex ? this.status_current : item.status; // 更新状态
+        item.status = index === itemIndex ? this.status_current : item.status
       })
-      this.activeQuestionIndex = index; // 更新当前活动题目索引
-      this.saveToLocalStorage() // 保存数据到本地
+      this.activeQuestionIndex = index
+      this.saveToLocalStorage()
     },
     markQuestion() {
-      this.toggleMark(this.activeQuestionIndex); // 标注当前题目
-      this.saveToLocalStorage() // 保存数据到本地
-
+      this.answer.answerItems[this.activeQuestionIndex].marked = !this.answer.answerItems[this.activeQuestionIndex].marked
+      this.saveToLocalStorage()
     },
     initAnswer() {
       this.answer.id = this.form.id
@@ -205,9 +279,18 @@ export default {
         })
       })
     },
-    submitForm() {
+    submitForm(timeout = false) {
       window.clearInterval(this.timer)
       this.formLoading = true
+      // 判断是否有未完成的题目
+      const uncompletedItems = this.answer.answerItems.filter(item => !item.completed)
+      if (uncompletedItems.length > 0 && timeout === false) {
+        this.$alert('还有未完成的题目，请先完成后再提交', '提示', {
+          confirmButtonText: '确定'
+        })
+        this.formLoading = false
+        return
+      }
       examPaperAnswerApi.answerSubmit(this.answer).then(re => {
         if (re.code === 1) {
           this.$alert('试卷得分：' + re.response + '分', '考试结果', {
@@ -216,6 +299,8 @@ export default {
               this.$router.push('/record/index')
             }
           })
+          localStorage.removeItem(this.userExamIdStartTime)
+          localStorage.removeItem(this.userExamIdData)
         } else {
           this.$message.error(re.message)
         }
@@ -225,7 +310,7 @@ export default {
       })
     },
     handleAnswerUpdate() {
-      if (this.answer.answerItems[this.activeQuestionIndex].completed == true) {
+      if (this.answer.answerItems[this.activeQuestionIndex].completed === true) {
         this.answer.answerItems[this.activeQuestionIndex].status = this.status_current
         this.answer.answerItems[this.activeQuestionIndex].pre_status = this.status_completed
       } else {
@@ -233,42 +318,75 @@ export default {
         this.answer.answerItems[this.activeQuestionIndex].pre_status = this.status_not_done
       }
       this.saveToLocalStorage() // 保存数据到本地
-
+      if (this.autoNextExam && this.answer.answerItems[this.activeQuestionIndex].type === 'radio') {
+        this.setActiveQuestion(this.activeQuestionIndex + 1)
+      }
     },
     previousQuestion() {
       if (this.activeQuestionIndex === 0) {
         return
       }
-      this.setActiveQuestion(this.activeQuestionIndex - 1);
+      this.setActiveQuestion(this.activeQuestionIndex - 1)
       this.saveToLocalStorage() // 保存数据到本地
-
     },
     nextQuestion() {
       if (this.activeQuestionIndex === this.answer.answerItems.length - 1) {
         return
       }
-      this.setActiveQuestion(this.activeQuestionIndex + 1);
+      this.setActiveQuestion(this.activeQuestionIndex + 1)
       this.saveToLocalStorage() // 保存数据到本地
-
     },
     zoomOut() {
-      this.scale -= 0.1; // 缩小
-
-      // Logic for zooming out
+      if (this.scale < 0.25) {
+        return null
+      }
+      this.scale -= 0.1 // 缩小
     },
     zoomIn() {
-      this.scale += 0.1; // 放大
-      // Logic for zooming in
-    },
-    mark() {
-      this.answer.answerItems[this.activeQuestionIndex].marked = !this.answer.answerItems[this.activeQuestionIndex].marked
-      // Logic for marking question
+      if (this.scale > 2) {
+        return null
+      }
+      this.scale += 0.1 // 放大
     },
     showCalculator() {
       // Logic to show calculator
     },
     openSettings() {
       // Logic to open settings
+    },
+    saveToLocalStorage() {
+      const dataToSave = {
+        activeQuestionIndex: this.activeQuestionIndex,
+        answerItems: this.answer.answerItems
+      }
+      localStorage.setItem(this.userExamIdData, JSON.stringify(dataToSave))
+    },
+    toggleAutoNextExam(enable) {
+      this.autoNextExam = enable
+    },
+    settingHandleCommand(command) {
+      const commandMap = {
+        autoNextExam: () => { this.autoNextExam = true },
+        manualNextExam: () => { this.autoNextExam = false },
+        scale25: () => { this.scale = 0.25 },
+        scale50: () => { this.scale = 0.5 },
+        scale100: () => { this.scale = 1 },
+        scale150: () => { this.scale = 1.5 },
+        scale200: () => { this.scale = 2 },
+        hiddenAside: () => { this.isAsideVisible = !this.isAsideVisible }
+      }
+      if (command in commandMap) {
+        commandMap[command]()
+      } else {
+        console.error(`未识别的命令: ${command}`)
+      }
+    },
+    getCurrentTimestamp() {
+      const currentTimestampInSeconds = Math.floor(Date.now() / 1000)
+      return currentTimestampInSeconds
+    },
+    hiddenAside() {
+      this.isAsideVisible = !this.isAsideVisible
     }
   },
   computed: {
@@ -278,44 +396,37 @@ export default {
       doCompletedTag: state => state.exam.question.answer.doCompletedTag
     }),
     currentTitleItem() {
-      if (this.activeQuestionIndex !== null && this.form.titleItems.length > 0) {
-        const totalTitleItems = this.form.titleItems.length;
-        let itemCounter = 0;
+      if (this.activeQuestionIndex !== null && this.form.titleItems) {
+        const totalTitleItems = this.form.titleItems.length
+        if (totalTitleItems === 0) {
+          return null
+        }
+        let itemCounter = 0
         for (let i = 0; i < totalTitleItems; i++) {
-          const questionCount = this.form.titleItems[i].questionItems.length;
+          const questionCount = this.form.titleItems[i].questionItems.length
           if (this.activeQuestionIndex < itemCounter + questionCount) {
-            return this.form.titleItems[i].questionItems[this.activeQuestionIndex - itemCounter];
+            return this.form.titleItems[i].questionItems[this.activeQuestionIndex - itemCounter]
           }
-          itemCounter += questionCount;
+          itemCounter += questionCount
         }
       }
-      return null;
+      return null
     },
     progress() {
-      const answeredCount = this.answer.answerItems ? this.answer.answerItems.filter(item => item.completed).length : 0;
-      const totalQuestions = this.answer.answerItems ? this.answer.answerItems.length : 0;
-      return totalQuestions > 0 ? ((answeredCount / totalQuestions) * 100).toFixed(0) : 0;
+      const answeredCount = this.answer.answerItems ? this.answer.answerItems.filter(item => item.completed).length : 0
+      const totalQuestions = this.answer.answerItems ? this.answer.answerItems.length : 0
+      return totalQuestions > 0 ? ((answeredCount / totalQuestions) * 100).toFixed(0) : 0
     },
     groupedAnswerItems() {
       return this.answer.answerItems.reduce((acc, item) => {
-        const questionType = item.questionType; // 获取 questiontype
+        const questionType = item.questionType
         if (!acc[questionType]) {
-          acc[questionType] = [];
+          acc[questionType] = []
         }
-        acc[questionType].push(item);
-        return acc;
-      }, {});
-    },
-    saveToLocalStorage() {
-      const dataToSave = {
-        activeQuestionIndex: this.activeQuestionIndex,
-        answerItems: this.answer.answerItems
-      };
-      console.log(dataToSave);
-      localStorage.setItem(this.userName + '_examData', JSON.stringify(dataToSave));
-
-    },
-
+        acc[questionType].push(item)
+        return acc
+      }, {})
+    }
   }
 }
 </script>
@@ -334,20 +445,18 @@ export default {
   padding: 10px;
 
   .el-form-item__label {
-    font-size: 15px !important;
+    font-size: 16px !important;
   }
 }
 
 .header-padding {
   padding: 0 10px;
+  font-size: 16px;
 }
 
 .el-tag {
   cursor: pointer;
-}
-
-.do-exam-time {
-  // margin-left: 20px;
+  font-size: 16px;
 }
 
 /* 进度条样式 */
@@ -356,7 +465,6 @@ export default {
   height: 30px;
   border-radius: 5px;
   border: 1px solid green;
-
 }
 
 .progress-bar {
@@ -364,23 +472,19 @@ export default {
   background-color: #4caf50;
   border-radius: 5px;
   text-align: center;
-
   justify-content: center;
   line-height: 30px;
-  /* 垂直居中 */
   transition: width 0.3s;
 }
 
 /* 题目状态颜色 */
 .not-done {
   background-color: white;
-  /* 未作答 */
 }
 
 .completed {
   background-color: #1d7ecc;
-  color: #fff
-    /* 已作答 */
+  color: #fff;
 }
 
 .current {
@@ -395,30 +499,23 @@ export default {
 }
 
 .marked {
-
   position: relative;
   border: 1px solid #2196F3;
-  // padding: 5px ;
 }
 
 .index-tag {
   width: 30px;
-  /* 固定宽度 */
   height: 30px;
-  /* 固定高度 */
   display: flex;
-  /* 使用flex布局 */
   float: left;
   justify-content: center;
-  /* 水平居中 */
   align-items: center;
-  /* 垂直居中 */
   margin: 10px;
+  font-size: 16px;
 }
 
 .tag-content {
-  font-size: 12px;
-  /* 字体大小 */
+  font-size: 16px;
 }
 
 .marked::after {
@@ -430,27 +527,28 @@ export default {
   height: 0;
   border-style: solid;
   border-width: 0 15px 15px 0;
-  /* 根据需要调整大小 */
   border-color: transparent rgb(248, 0, 0) transparent transparent;
-  /* 根据需要修改颜色 */
 }
 
 .el-header,
 .el-footer {
   background-color: #B3C0D1;
   color: #333;
+  font-size: 16px;
 }
 
 .el-main {
   background-color: #E9EEF3;
   color: #333;
-  // text-align: center;
+  font-size: 16px;
 }
 
 body>.el-container {
   margin-bottom: 40px;
 }
+
 .parent-container {
-  position: relative; /* 父类相对定位 */
+  position: relative;
+  height: 100%;
 }
 </style>

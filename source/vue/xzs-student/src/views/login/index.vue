@@ -112,6 +112,8 @@ export default {
           loginApi.login(this.loginForm).then(function (result) {
             if (result && result.code === 1) {
               _this.setUserName(_this.loginForm.userName)
+              localStorage.removeItem(_this.loginForm.userName + '_' + _this.$route.query.id + '_remainTime')
+              localStorage.removeItem(_this.loginForm.userName + '_' + _this.$route.query.id + '_examData')
               _this.$router.push({ path: '/do?id=' + _this.$route.query.id })
             } else {
               _this.loading = false

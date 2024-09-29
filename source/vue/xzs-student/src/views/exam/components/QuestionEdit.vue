@@ -1,5 +1,5 @@
 <template>
-  <div style="line-height: 1.8">
+  <div style="line-height: 2">
     <div v-if="qType == 1" v-loading="qLoading">
       <div class="edit-checkbox-container">
         <span><i class="el-icon-edit" style="margin-right: 25px;"> 请作答</i></span>
@@ -38,7 +38,7 @@ export default {
     answer: {
       type: Object,
       default: function () {
-        return { id: null, content: '', contentArray: [] }
+        return { id: null, content: '', contentArray: [], type: '', completed: false }
       }
     },
     qLoading: {
@@ -51,12 +51,14 @@ export default {
     }
   },
   methods: {
-    handleChange(value) {
+    handleChange (value) {
       this.answer.completed = true// 标记为已完成
+      this.answer.type = 'radio' // 记录答案类型
       if (value === 'checkbox') {
         if (this.answer.contentArray.length === 0) {
           this.answer.completed = false // 标记为未完成
         }
+        this.answer.type = 'checkbox'
       }
       this.$emit('update:answer', this.answer) // 触发自定义事件，将答案传递给父组件
     }
