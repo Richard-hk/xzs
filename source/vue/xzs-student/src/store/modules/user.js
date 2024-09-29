@@ -21,6 +21,9 @@ const actions = {
     })
   }
 }
+const getters = {
+  userName: state => state.userName
+}
 
 // mutations
 const mutations = {
@@ -53,5 +56,6 @@ export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
+  getters
 }

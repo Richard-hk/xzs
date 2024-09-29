@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: 10px">
-    <el-row>
+    <!-- <el-row>
       <el-carousel :interval="5000" arrow="always" type="card">
         <el-carousel-item >
           <img src="@/assets/carousel/1.png" class="carousel-img">
@@ -15,8 +15,8 @@
           <img src="@/assets/carousel/4.png" class="carousel-img">
         </el-carousel-item>
       </el-carousel>
-    </el-row>
-    <el-row class="app-item-contain">
+    </el-row> -->
+    <!-- <el-row class="app-item-contain">
       <h3 class="index-title-h3" style="border-left: solid 10px #3651d4;">任务中心</h3>
       <div style="padding-left: 15px">
         <el-collapse  v-loading="taskLoading"  accordion v-if="taskList.length!==0">
@@ -47,7 +47,7 @@
           </el-collapse-item>
         </el-collapse>
       </div>
-    </el-row>
+    </el-row> -->
     <el-row class="app-item-contain">
       <h3 class="index-title-h3">固定试卷</h3>
       <div style="padding-left: 15px">
@@ -57,7 +57,7 @@
             <div style="padding: 14px;">
               <span>{{item.name}}</span>
               <div class="bottom clearfix">
-                <router-link target="_blank" :to="{path:'/do',query:{id:item.id}}">
+                <router-link target="_blank" :to="{path:'/login',query:{id:item.id}}">
                   <el-button type="text" class="button">开始做题</el-button>
                 </router-link>
               </div>
@@ -66,7 +66,7 @@
         </el-col>
       </div>
     </el-row>
-    <el-row class="app-item-contain">
+    <!-- <el-row class="app-item-contain">
       <h3 class="index-title-h3" style="border-left: solid 10px rgb(220, 208, 65);">时段试卷</h3>
       <div style="padding-left: 15px">
         <el-col :span="4" v-for="(item, index) in timeLimitPaper" :key="index" :offset="index > 0 ? 1 : 0">
@@ -88,7 +88,7 @@
           </el-card>
         </el-col>
       </div>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -102,7 +102,7 @@ export default {
       timeLimitPaper: [],
       pushPaper: [],
       loading: false,
-      taskLoading: false,
+      // taskLoading: false,
       taskList: []
     }
   },
@@ -116,11 +116,11 @@ export default {
       _this.loading = false
     })
 
-    this.taskLoading = true
-    indexApi.task().then(re => {
-      _this.taskList = re.response
-      _this.taskLoading = false
-    })
+    // this.taskLoading = true
+    // indexApi.task().then(re => {
+    //   _this.taskList = re.response
+    //   _this.taskLoading = false
+    // })
   },
   methods: {
     statusTagFormatter (status) {

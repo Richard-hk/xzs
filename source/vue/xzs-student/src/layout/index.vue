@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header height="61" class="student-header">
+    <!-- <el-header height="61" class="student-header">
       <div class="head-user">
         <el-dropdown trigger="click" placement="bottom">
           <el-badge :is-dot="messageCount!==0" >
@@ -27,11 +27,11 @@
       <div>
         <a href="/"><img src="@/assets/logo.png" height="56"/></a>
       </div>
-    </el-header>
+    </el-header> -->
     <el-main class="student-main">
       <router-view/>
     </el-main>
-    <el-footer height="340" class="student-footer">
+    <!-- <el-footer height="340" class="student-footer">
       <div class="foot-container">
         <div class="footer-main">
           <h4>产品介绍</h4>
@@ -59,7 +59,7 @@
     </el-footer>
     <div class="foot-copyright">
       <span>Copyright ©2019-2024 武汉思维跳跃科技有限公司 版权所有</span>
-    </div>
+    </div> -->
   </el-container>
 </template>
 
@@ -78,12 +78,12 @@ export default {
     }
   },
   created () {
-    let _this = this
-    this.defaultUrl = this.routeSelect(this.$route.path)
-    this.getUserMessageInfo()
-    userApi.getCurrentUser().then(re => {
-      _this.userInfo = re.response
-    })
+    // let _this = this
+    // this.defaultUrl = this.routeSelect(this.$route.path)
+    // this.getUserMessageInfo()
+    // // userApi.getCurrentUser().then(re => {
+    // //   _this.userInfo = re.response
+    // // })
   },
   watch: {
     $route (to, from) {
