@@ -3,13 +3,18 @@ package com.mindskip.xzs.domain.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum QuestionTypeEnum {
+public enum
 
-    SingleChoice(1, "单选题"),
-    MultipleChoice(2, "多选题"),
-    TrueFalse(3, "判断题"),
-    GapFilling(4, "填空题"),
-    ShortAnswer(5, "简答题");
+
+QuestionTypeEnum {
+
+    SingleChoice(10, "单选题"),
+    SingleChoice1(11, "单选题"),
+    SingleChoice2(12, "单选题"),
+    MultipleChoice(20, "多选题"),
+    TrueFalse(30, "判断题"),
+    GapFilling(40, "填空题"),
+    ShortAnswer(50, "简答题");
 
     int code;
     String name;

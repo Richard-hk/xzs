@@ -7,6 +7,7 @@ import com.mindskip.xzs.domain.TaskExamCustomerAnswer;
 import com.mindskip.xzs.domain.TextContent;
 import com.mindskip.xzs.domain.User;
 import com.mindskip.xzs.domain.enums.ExamPaperTypeEnum;
+import com.mindskip.xzs.domain.enums.ExamStatusEnum;
 import com.mindskip.xzs.domain.task.TaskItemAnswerObject;
 import com.mindskip.xzs.domain.task.TaskItemObject;
 import com.mindskip.xzs.service.*;
@@ -47,26 +48,27 @@ public class DashboardController extends BaseApiController {
     @RequestMapping(value = "/index", method = RequestMethod.POST)
     public RestResponse<IndexVM> index() {
         IndexVM indexVM = new IndexVM();
-        User user = getCurrentUser();
-
         PaperFilter fixedPaperFilter = new PaperFilter();
-        fixedPaperFilter.setGradeLevel(user.getUserLevel());
+
+        fixedPaperFilter.setGradeLevel(1);
         fixedPaperFilter.setExamPaperType(ExamPaperTypeEnum.Fixed.getCode());
+        fixedPaperFilter.setStatus(ExamStatusEnum.Enable.getCode());
         indexVM.setFixedPaper(examPaperService.indexPaper(fixedPaperFilter));
 
-        PaperFilter timeLimitPaperFilter = new PaperFilter();
-        timeLimitPaperFilter.setDateTime(new Date());
-        timeLimitPaperFilter.setGradeLevel(user.getUserLevel());
-        timeLimitPaperFilter.setExamPaperType(ExamPaperTypeEnum.TimeLimit.getCode());
-
-        List<PaperInfo> limitPaper = examPaperService.indexPaper(timeLimitPaperFilter);
-        List<PaperInfoVM> paperInfoVMS = limitPaper.stream().map(d -> {
-            PaperInfoVM vm = modelMapper.map(d, PaperInfoVM.class);
-            vm.setStartTime(DateTimeUtil.dateFormat(d.getLimitStartTime()));
-            vm.setEndTime(DateTimeUtil.dateFormat(d.getLimitEndTime()));
-            return vm;
-        }).collect(Collectors.toList());
-        indexVM.setTimeLimitPaper(paperInfoVMS);
+//        PaperFilter timeLimitPaperFilter = new PaperFilter();
+//        timeLimitPaperFilter.setDateTime(new Date());
+//        timeLimitPaperFilter.setGradeLevel(1);
+//        timeLimitPaperFilter.setStatus(ExamStatusEnum.Enable.getCode());
+//        timeLimitPaperFilter.setExamPaperType(ExamPaperTypeEnum.TimeLimit.getCode());
+//
+//        List<PaperInfo> limitPaper = examPaperService.indexPaper(timeLimitPaperFilter);
+//        List<PaperInfoVM> paperInfoVMS = limitPaper.stream().map(d -> {
+//            PaperInfoVM vm = modelMapper.map(d, PaperInfoVM.class);
+//            vm.setStartTime(DateTimeUtil.dateFormat(d.getLimitStartTime()));
+//            vm.setEndTime(DateTimeUtil.dateFormat(d.getLimitEndTime()));
+//            return vm;
+//        }).collect(Collectors.toList());
+//        indexVM.setTimeLimitPaper(paperInfoVMS);
         return RestResponse.ok(indexVM);
     }
 

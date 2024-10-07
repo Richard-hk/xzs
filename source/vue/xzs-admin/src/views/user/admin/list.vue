@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">查询</el-button>
-        <router-link :to="{path:'/user/admin/edit'}" class="link-left">
+        <router-link :to="{ path: '/user/admin/edit' }" class="link-left">
           <el-button type="primary">添加</el-button>
         </router-link>
       </el-form-item>
@@ -14,11 +14,11 @@
 
     <el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%">
       <el-table-column prop="id" label="Id" />
-      <el-table-column prop="userName" label="用户名"/>
+      <el-table-column prop="userName" label="用户名" />
       <el-table-column prop="realName" label="真实姓名" />
-      <el-table-column prop="sex" label="性别" width="60px;" :formatter="sexFormatter"/>
-      <el-table-column prop="phone" label="手机号"/>
-      <el-table-column prop="createTime" label="创建时间" width="160px"/>
+      <el-table-column prop="sex" label="性别" width="60px;" :formatter="sexFormatter" />
+      <el-table-column prop="phone" label="手机号" />
+      <el-table-column prop="createTime" label="创建时间" width="160px" />
       <el-table-column label="状态" prop="status" width="70px">
         <template slot-scope="{row}">
           <el-tag :type="statusTagFormatter(row.status)">
@@ -28,18 +28,18 @@
       </el-table-column>
       <el-table-column width="220px" label="操作" align="center">
         <template slot-scope="{row}">
-          <el-button size="mini"   @click="changeStatus(row)" class="link-left">
+          <el-button size="mini" @click="changeStatus(row)" class="link-left" :disabled="row.userName === 'goodadmin'">
             {{ statusBtnFormatter(row.status) }}
           </el-button>
-          <router-link :to="{path:'/user/admin/edit', query:{id:row.id}}" class="link-left">
+          <router-link :to="{ path: '/user/admin/edit', query: { id: row.id } }" class="link-left">
             <el-button size="mini">编辑</el-button>
           </router-link>
-          <el-button size="mini" type="danger"  @click="deleteUser(row)" class="link-left">删除</el-button>
+          <el-button size="mini" type="danger" :disabled="row.userName === 'goodadmin'" @click="deleteUser(row)" class="link-left">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="queryParam.pageIndex" :limit.sync="queryParam.pageSize"
-                @pagination="search"/>
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParam.pageIndex" :limit.sync="queryParam.pageSize"
+      @pagination="search" />
   </div>
 </template>
 
@@ -103,7 +103,7 @@ export default {
       this.queryParam.pageIndex = 1
       this.search()
     },
-    sexFormatter  (row, column, cellValue, index) {
+    sexFormatter (row, column, cellValue, index) {
       return this.enumFormat(this.sexEnum, cellValue)
     },
     statusFormatter (status) {

@@ -218,6 +218,8 @@ public class ExamPaperAnswerServiceImpl extends BaseServiceImpl<ExamPaperAnswer>
         QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.fromCode(examPaperQuestionCustomerAnswer.getQuestionType());
         switch (questionTypeEnum) {
             case SingleChoice:
+            case SingleChoice1:
+            case SingleChoice2:
             case TrueFalse:
                 examPaperQuestionCustomerAnswer.setAnswer(customerQuestionAnswer.getContent());
                 examPaperQuestionCustomerAnswer.setDoRight(question.getCorrect().equals(customerQuestionAnswer.getContent()));

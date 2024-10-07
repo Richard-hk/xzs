@@ -22,6 +22,8 @@ public class ExamResponseVM {
 
     private Integer frameTextContentId;
 
+    private Integer status;
+
     public Integer getId() {
         return id;
     }
@@ -92,5 +94,13 @@ public class ExamResponseVM {
 
     public void setFrameTextContentId(Integer frameTextContentId) {
         this.frameTextContentId = frameTextContentId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

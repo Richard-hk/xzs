@@ -11,6 +11,7 @@ public class ExamPaperPageRequestVM extends BasePage {
     private Integer level;
     private Integer paperType;
     private Integer taskExamId;
+    private Integer status;
 
     public Integer getId() {
         return id;
@@ -50,5 +51,13 @@ public class ExamPaperPageRequestVM extends BasePage {
 
     public void setTaskExamId(Integer taskExamId) {
         this.taskExamId = taskExamId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

@@ -37,6 +37,11 @@ public class ExamPaperController extends BaseApiController {
         return RestResponse.ok(page);
     }
 
+    @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
+    public RestResponse<Integer> updateStatus(@RequestBody ExamPaperPageRequestVM model) {
+        Integer res = examPaperService.updateStatus(model);
+        return RestResponse.ok(res);
+    }
 
 
     @RequestMapping(value = "/taskExamPage", method = RequestMethod.POST)

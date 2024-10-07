@@ -3,12 +3,12 @@
 
     <el-form :model="form" ref="form" label-width="100px" v-loading="formLoading" :rules="rules">
       <el-form-item label="用户名："  prop="userName" required>
-        <el-input v-model="form.userName"></el-input>
+        <el-input v-model="form.userName" :disabled="form.userName === 'goodadmin'"></el-input>
       </el-form-item>
-      <el-form-item label="密码：" required>
+      <el-form-item label="身份证号：" required>
         <el-input v-model="form.password"></el-input>
       </el-form-item>
-      <el-form-item label="真实姓名：" prop="realName"   required>
+      <el-form-item label="真实姓名：" prop="realName">
         <el-input v-model="form.realName"></el-input>
       </el-form-item>
       <el-form-item label="年龄：">
@@ -61,10 +61,10 @@ export default {
       rules: {
         userName: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
-        realName: [
-          { required: true, message: '请输入真实姓名', trigger: 'blur' }
         ]
+        // realName: [
+        //   { required: true, message: '请输入真实姓名', trigger: 'blur' }
+        // ]
       }
     }
   },

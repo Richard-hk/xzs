@@ -4,8 +4,8 @@
       <el-form-item label="题目ID：">
         <el-input v-model="queryParam.id" clearable></el-input>
       </el-form-item>
-      <el-form-item label="年级：">
-        <el-select v-model="queryParam.level" placeholder="年级"  @change="levelChange" clearable>
+      <el-form-item label="级别：">
+        <el-select v-model="queryParam.level" placeholder="级别"  @change="levelChange" clearable>
           <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
         </el-select>
       </el-form-item>
@@ -24,7 +24,7 @@
         <el-button type="primary" @click="submitForm">查询</el-button>
         <el-popover placement="bottom" trigger="click">
           <el-button type="warning" size="mini" v-for="item in editUrlEnum" :key="item.key"
-                     @click="$router.push({path:item.value})">{{item.name}}
+                     @click="$router.push({path:item.value,query: { questionType: item.key}})">{{item.name}}
           </el-button>
           <el-button slot="reference" type="primary" class="link-left">添加</el-button>
         </el-popover>

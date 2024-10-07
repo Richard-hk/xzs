@@ -15,6 +15,7 @@ public interface ExamPaperService extends BaseService<ExamPaper> {
 
     PageInfo<ExamPaper> page(ExamPaperPageRequestVM requestVM);
 
+
     PageInfo<ExamPaper> taskExamPage(ExamPaperPageRequestVM requestVM);
 
     PageInfo<ExamPaper> studentPage(ExamPaperPageVM requestVM);
@@ -26,6 +27,9 @@ public interface ExamPaperService extends BaseService<ExamPaper> {
     List<PaperInfo> indexPaper(PaperFilter paperFilter);
 
     Integer selectAllCount();
+
+    Integer updateStatus(ExamPaperPageRequestVM requestVM);
+
 
     List<Integer> selectMothCount();
 }

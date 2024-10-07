@@ -4,8 +4,8 @@
       <el-form-item label="题目ID：">
         <el-input v-model="queryParam.id" clearable></el-input>
       </el-form-item>
-      <el-form-item label="年级：">
-        <el-select v-model="queryParam.level" placeholder="年级" @change="levelChange" clearable>
+      <el-form-item label="级别：">
+        <el-select v-model="queryParam.level" placeholder="级别" @change="levelChange" clearable>
           <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
         </el-select>
       </el-form-item>
@@ -25,11 +25,21 @@
       <el-table-column prop="id" label="Id" width="90px"/>
       <el-table-column prop="subjectId" label="学科" :formatter="subjectFormatter" width="120px" />
       <el-table-column prop="name" label="名称"  />
+      <el-table-column prop="status" label="状态" width="70px">
+        <template slot-scope="{row}">
+          <el-tag :type="statusTagFormatter(row.status)">
+            {{ statusFormatter(row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="160px"/>
-      <el-table-column  label="操作" align="center"  width="160px">
+      <el-table-column label="操作" align="center"  width="230px">
         <template slot-scope="{row}">
           <el-button size="mini" @click="$router.push({path:'/exam/paper/edit',query:{id:row.id}})" >编辑</el-button>
-          <el-button size="mini" type="danger"  @click="deletePaper(row)" class="link-left">删除</el-button>
+          <el-button size="mini" @click="changeStatus(row)" class="link-left" :disabled="row.userName === 'goodadmin'">
+            {{ statusBtnFormatter(row.status) }}
+          </el-button>
+          <el-button size="mini" type="danger" @click="deletePaper(row)" class="link-left">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -54,6 +64,10 @@ export default {
         pageIndex: 1,
         pageSize: 10
       },
+      updataParam: {
+        id: null,
+        status: null
+      },
       subjectFilter: null,
       listLoading: true,
       tableData: [],
@@ -68,6 +82,29 @@ export default {
     submitForm () {
       this.queryParam.pageIndex = 1
       this.search()
+    },
+    statusTagFormatter (status) {
+      return this.enumFormat(this.statusTag, status)
+    },
+    statusFormatter (status) {
+      return this.enumFormat(this.statusEnum, status)
+    },
+    statusBtnFormatter (status) {
+      return this.enumFormat(this.statusBtn, status)
+    },
+    changeStatus (row) {
+      let _this = this
+      _this.updataParam.status = row.status === 2 ? 1 : 2
+      _this.updataParam.id = row.id
+      examPaperApi.updateStatus(_this.updataParam).then(re => {
+        if (re.code === 1) {
+          row.status = _this.updataParam.status
+          _this.$message.success(re.message)
+        } else {
+          _this.$message.error(re.message)
+        }
+      })
+      this.initSubject()
     },
     search () {
       this.listLoading = true
@@ -102,7 +139,10 @@ export default {
   computed: {
     ...mapGetters('enumItem', ['enumFormat']),
     ...mapState('enumItem', {
-      levelEnum: state => state.user.levelEnum
+      levelEnum: state => state.user.levelEnum,
+      statusEnum: state => state.user.statusEnum,
+      statusTag: state => state.user.statusTag,
+      statusBtn: state => state.user.statusBtn
     }),
     ...mapGetters('exam', ['subjectEnumFormat']),
     ...mapState('exam', { subjects: state => state.subjects })

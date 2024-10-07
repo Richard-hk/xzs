@@ -1,15 +1,14 @@
 <template>
   <div style="line-height: 2" :style="computedStyle">
-    <div v-if="qType == 1" v-loading="qLoading" class="question-layout">
+    <div v-if="qType == 10 || qType == 11 || qType ==12" v-loading="qLoading" class="question-layout">
       <div class="q-content">
         <div v-for="item in question.items" :key="item.prefix" style="margin-bottom: 10px;">
           <span class="question-prefix">{{ item.prefix }}</span>
           <span v-html="item.content" class="q-item-span-content"></span>
-          <div style="height: 200px; background-color: antiquewhite;"></div>
         </div>
       </div>
     </div>
-    <div v-if="qType == 2" v-loading="qLoading" class="question-layout">
+    <div v-if="qType == 20" v-loading="qLoading" class="question-layout">
       <div class="q-content" style="text-align: left;">
         <div v-for="item in question.items" :key="item.prefix" style="margin-bottom: 10px;">
           <span class="question-prefix">{{ item.prefix }}</span>

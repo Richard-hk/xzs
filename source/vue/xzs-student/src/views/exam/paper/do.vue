@@ -1,36 +1,64 @@
 <template>
   <el-container style="height: 100vh;">
-    <el-header style="padding: 12px;">
+
+    <el-header style="padding: 0; height: 80px;">
       <el-row>
-        <el-col :span="4">{{ userName }}</el-col>
-        <el-col :span="20">
+        <el-col style="width: 250px; flex: none; height: 80px;  font-size: 14px; overflow: hidden;">
+          <div style="display:flex;height: 80px;  ">
+            <div>
+              <router-link to="index">
+              <img
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD4l+7UAAAACXZwQAAAC2yPDaAAAAAElFTkSuQmCC"
+                style="width: 60px; height: 100%; margin: 0 10px 0 20px">
+            </router-link>
+            </div>
+            <div style="height: 80px; ">
+              <p>{{ userName }}</p>
+              <p>111111111111111111</p>
+            </div>
+          </div>
+        </el-col>
+        <el-col style="width: calc(100% - 250px);flex: 1;">
           <div style="display: flex;align-items: center;">
-            <span class="header-padding" style="margin-right: auto;">{{ form.name }}</span>
-            <span class="header-padding">试卷总分：{{ form.score }}</span>
-            <span class="header-padding">考试时间：{{ form.suggestTime }}分钟</span>
-            <span class="header-padding">
-              <label>剩余时间：</label>
-              <label>{{ formatSeconds(remainTime) }}</label>
-            </span>
-            <el-button type="primary" @click="submitForm" style="margin-left: 20px;">提交</el-button>
+            <div>
+              <span class="header-padding" style="margin-left: 10px; font-size: 20px; font-weight: bold;">{{ form.name
+                }}</span>
+            </div>
+            <div style="margin-left: auto;margin-right: 25px; font-size: 14px;font-weight: bold;">
+              <p>试卷题数：{{ this.totalCount }}</p>
+              <p>试卷总分：{{ form.score }}</p>
+            </div>
+            <div style="margin-right: 25px; font-size: 14px; font-weight: bold;">
+              <p>考试时间：{{ form.suggestTime }}分钟</p>
+              <p>
+                <label>剩余时间：</label>
+                <label :class="{
+                  'remain-time-red': remainTime < this.suggestTime * 0.25,
+                }">{{ formatSeconds(remainTime) }}</label>
+              </p>
+            </div>
+            <el-button type="danger" @click="submitForm(false)"
+              style="margin:15px 35px 15px 0; height:50px; font-size: 20px;">提交</el-button>
           </div>
         </el-col>
       </el-row>
     </el-header>
-    <el-container style="height: calc(100% - 60px);">
-      <el-aside width="250px" style="padding: 20px;" v-if="isAsideVisible">
-        <div style="display: flex; align-items: center;">
+
+    <el-container style="height: calc(100% - 80px);">
+      <el-aside width="250px" style="padding: 20px;border-right: 1px solid #dcdfe6;" v-if="isAsideVisible">
+        <div style="display: flex; align-items: center; ">
           作答进度：
           <div class="progress-bar-container">
-            <div class="progress-bar" :style="{ width: progress + '%' }">
+            <div class="progress-bar" :style="{ width: progress + '%' }" style="margin-top: 0px;">
               {{ progress }}%
             </div>
           </div>
         </div>
         <div>
-          <div v-for="(group, questionType) in groupedAnswerItems" :key="questionType" class="tag-container">
-            <p>- {{ questionTypeMap[questionType] }}</p>
-            <span v-for="(item) in group" :key="item.itemOrder">
+          <div v-for="(item) in sortedGroupedAnswerItems" :key="item.questionType" class="tag-container"
+            style="width: 100%;">
+            <p>一 {{ questionTypeMap[item.questionType] }}</p>
+            <span v-for="(item) in item.group.items" :key="item.itemOrder">
               <el-tag :class="{
                 'not-done': item.status === status_not_done,
                 'completed': item.status === status_completed,
@@ -44,10 +72,13 @@
         </div>
       </el-aside>
       <el-container>
-        <el-main style="height: 100%;">
-          <el-row style="height: 25px;">一、最佳选择题（共**题，每题**分。每题的备选项中，只有1个最符合题意）</el-row>
-          <el-row style="height: 100%;">
-            <el-col :span="12" style="height: 100%; overflow: auto;">
+        <el-main style="height: 100% ;padding: 10px;">
+          <div
+            style=" position: sticky; top: 0; background: white; z-index: 1; border-bottom: 1px solid #dcdfe6;padding-bottom: 10px; ">
+            <el-row style=" line-height: 1.5;">{{ index_tag_show }}</el-row>
+          </div>
+          <el-row style="height:calc(100% - 60px);  ">
+            <el-col :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
               <el-form :model="form" ref="form" v-loading="formLoading">
                 <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
                   class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
@@ -72,44 +103,45 @@
           </el-row>
         </el-main>
 
-        <el-footer>
+        <el-footer style="height: 48px;  background-color: #f2f2f2;">
           <el-form :model="form" ref="form" v-loading="formLoading">
             <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-              class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+              :id="'question-' + currentTitleItem.itemOrder">
               <QuestionEdit :qType="currentTitleItem.questionType" :question="currentTitleItem"
                 :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" @update:answer="handleAnswerUpdate" />
             </el-form-item>
           </el-form>
         </el-footer>
-        <el-footer>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex;">
-              <el-button type="primary" @click="hiddenAside" plain style="padding: 0px;">
+
+        <el-footer style="height: 68px; padding: 16px 35px 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; ">
+            <div style="display: flex; font-size: 40px;">
+              <el-button type="primary" @click="hiddenAside" plain style="padding: 0px; font-size: 16px;">
                 <i :class="{
                   'el-icon-arrow-right': this.isAsideVisible == false,
                   'el-icon-arrow-left': this.isAsideVisible == true
                 }"></i>
               </el-button>
-              <el-button @click="previousQuestion">上一题</el-button>
-              <el-button type="primary" @click="nextQuestion">下一题</el-button>
+              <el-button @click="previousQuestion" style="font-size: 16px;">上一题</el-button>
+              <el-button type="primary" @click="nextQuestion" style="font-size: 16px">下一题</el-button>
             </div>
             <div style="display: flex;">
-              <el-button type="warning" @click="zoomOut" plain>缩小</el-button>
-              <el-button type="warning" @click="zoomIn" plain>放大</el-button>
-              <el-button type="warning" @click="markQuestion" plain>
+              <el-button type="warning" @click="zoomOut" plain style="font-size: 16px">缩小</el-button>
+              <el-button type="warning" @click="zoomIn" plain style="font-size: 16px">放大</el-button>
+              <el-button type="warning" @click="markQuestion" plain style="font-size: 16px">
                 <i :class="{
                   'el-icon-star-off': this.answer.answerItems[this.activeQuestionIndex]?.marked == false,
                   'el-icon-star-on': this.answer.answerItems[this.activeQuestionIndex]?.marked
                 }"></i>
                 标记</el-button>
-              <el-button type="warning" @click="showCalculator" plain>计算器</el-button>
+              <el-button type="warning" @click="showCalculator" plain style="font-size: 16px">计算器</el-button>
 
               <el-dropdown @command="settingHandleCommand" style="margin-left: 10px;">
-                <el-button type="primary" icon="el-icon-setting" @click="openSettings">
+                <el-button type="primary" icon="el-icon-setting" style="font-size: 16px">
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="autoNextExam">自动切换下一篇题</el-dropdown-item>
-                  <el-dropdown-item command="manualNextExam">手动切换下一篇题</el-dropdown-item>
+                  <el-dropdown-item command="autoNextExam">自动切换下一题</el-dropdown-item>
+                  <el-dropdown-item command="manualNextExam">手动切换下一题</el-dropdown-item>
                   <el-dropdown-item command="scale25"> 显示比例25%</el-dropdown-item>
                   <el-dropdown-item command="scale50">显示比例50%</el-dropdown-item>
                   <el-dropdown-item command="scale100">原始比例</el-dropdown-item>
@@ -153,10 +185,22 @@ export default {
       status_current: 2,
       status_marked: true,
       questionTypeMap: {
-        1: '最佳选择题',
-        2: '多项选择题',
-        3: '判断题',
-        4: '问答题'
+        12: '综合分析选择题',
+        10: '最佳选择题',
+        11: '配伍选择题',
+        20: '多项选择题'
+      },
+      questionTypeMapChinese: {
+        1: '一',
+        2: '二',
+        3: '三',
+        4: '四'
+      },
+      questionTypeMapDesc: {
+        10: '每题的备选项中，只有1个最符合题意',
+        11: '题目分为若干组，每组题目对应同一组备选项，备选项可重复选用，也可不选用。每题只有1个备选项最符合题意',
+        12: '题目分为若干组，每组题目基于同一个临床情景、病例、实例或者案例的背景信息逐题展开。每题的备选项中，只有1个最符合题意',
+        20: '每题的备选项中，有2个或2个以上符合题意。错选、少选均不得分'
       },
       scale: 1,
       exam_id: null,
@@ -165,7 +209,11 @@ export default {
       autoNextExam: false,
       suggestTime: 0,
       userExamId: null,
-      isAsideVisible: true
+      isAsideVisible: true,
+      groupedAnswerItems: [],
+      index_tag_show: '',
+      questionTypeOrder: [],
+      totalCount: 0
     }
   },
   created() {
@@ -175,7 +223,6 @@ export default {
       this.userExamIdStartTime = this.userExamId + '_remainTime'
       this.userExamIdData = this.userExamId + '_examData'
       if (!localStorage.getItem(this.userExamIdStartTime)) {
-        console.log('currentTime:', this.getCurrentTimestamp())
         localStorage.setItem(this.userExamIdStartTime, this.getCurrentTimestamp())
       }
       this.formLoading = true
@@ -185,6 +232,8 @@ export default {
         this.suggestTime = re.response.suggestTime * 60
         if (savedData) {
           this.loadFromLocalStorage()
+          this.groupedQuestionAnswer()
+          this.setIndexTagShow(this.activeQuestionIndex)
           let localAnswerNum = this.answer.answerItems.length
           let apiAnswerNum = this.form.titleItems.reduce((acc, titleItem) => {
             return acc + titleItem.questionItems.length
@@ -195,11 +244,13 @@ export default {
             })
             this.answer.answerItems = []
             this.initAnswer()
+            this.groupedQuestionAnswer()
             this.setActiveQuestion(0)
           }
         } else {
           this.remainTime = this.suggestTime
           this.initAnswer()
+          this.groupedQuestionAnswer()
           this.setActiveQuestion(0)
           this.saveToLocalStorage()
         }
@@ -235,7 +286,6 @@ export default {
       console.log('remainTime:', this.remainTime)
       this.timer = setInterval(() => {
         if (this.remainTime <= 0) {
-          alert('时间到！')
           this.submitForm(true)
         } else {
           ++this.answer.doTime
@@ -250,12 +300,24 @@ export default {
       if (index < 0 || index >= this.answer.answerItems.length) {
         return
       }
+      this.setIndexTagShow(index)
       this.answer.answerItems[this.activeQuestionIndex].status = this.answer.answerItems[this.activeQuestionIndex].pre_status
       this.answer.answerItems.forEach((item, itemIndex) => {
         item.status = index === itemIndex ? this.status_current : item.status
       })
       this.activeQuestionIndex = index
       this.saveToLocalStorage()
+    },
+    setIndexTagShow(index) {
+      let indexAnswer = this.answer.answerItems[index]
+      let questionType = indexAnswer.questionType
+      let score = indexAnswer.score || 0
+      let group = this.groupedAnswerItems[questionType]
+      let msg1 = this.questionTypeMapChinese[index + 1] + ' 、'
+      let msg2 = this.questionTypeMap[questionType]
+      let msg3 = '共' + group.totalCount + '题，共' + group.totalScore + '分，当前第' + (index + 1) + '题，当前题分数' + score + '分。'
+      let msg4 = ' （ ' + msg3 + this.questionTypeMapDesc[questionType] + '）'
+      this.index_tag_show = msg1 + msg2 + msg4
     },
     markQuestion() {
       this.answer.answerItems[this.activeQuestionIndex].marked = !this.answer.answerItems[this.activeQuestionIndex].marked
@@ -274,7 +336,8 @@ export default {
             marked: false, // 新增标注属性
             status: 0, // 新增状态属性，默认未作答
             pre_status: 0, // 新增上一次状态属性
-            itemOrder: question.itemOrder
+            itemOrder: question.itemOrder,
+            score: question.score
           })
         })
       })
@@ -282,25 +345,21 @@ export default {
     submitForm(timeout = false) {
       window.clearInterval(this.timer)
       this.formLoading = true
-      // 判断是否有未完成的题目
       const uncompletedItems = this.answer.answerItems.filter(item => !item.completed)
+      console.log('uncompletedItems:', uncompletedItems.length, timeout)
       if (uncompletedItems.length > 0 && timeout === false) {
-        this.$alert('还有未完成的题目，请先完成后再提交', '提示', {
+        this.$alert('还有' + uncompletedItems.length + '道未完成的题目，请先完成后再提交', '提示', {
           confirmButtonText: '确定'
         })
         this.formLoading = false
         return
       }
+      this.answer.id = this.form.id
       examPaperAnswerApi.answerSubmit(this.answer).then(re => {
         if (re.code === 1) {
-          this.$alert('试卷得分：' + re.response + '分', '考试结果', {
-            confirmButtonText: '返回考试记录',
-            callback: action => {
-              this.$router.push('/record/index')
-            }
-          })
           localStorage.removeItem(this.userExamIdStartTime)
           localStorage.removeItem(this.userExamIdData)
+          this.$router.replace('/finish')
         } else {
           this.$message.error(re.message)
         }
@@ -337,22 +396,19 @@ export default {
       this.saveToLocalStorage() // 保存数据到本地
     },
     zoomOut() {
-      if (this.scale < 0.25) {
+      if (this.scale < 0.5) {
         return null
       }
       this.scale -= 0.1 // 缩小
     },
     zoomIn() {
-      if (this.scale > 2) {
+      if (this.scale > 1.5) {
         return null
       }
       this.scale += 0.1 // 放大
     },
     showCalculator() {
-      // Logic to show calculator
-    },
-    openSettings() {
-      // Logic to open settings
+      window.open('https://www.desmos.com/scientific?lang=zh-CN', '_blank')
     },
     saveToLocalStorage() {
       const dataToSave = {
@@ -368,11 +424,11 @@ export default {
       const commandMap = {
         autoNextExam: () => { this.autoNextExam = true },
         manualNextExam: () => { this.autoNextExam = false },
-        scale25: () => { this.scale = 0.25 },
-        scale50: () => { this.scale = 0.5 },
+        scale25: () => { this.scale = 0.5 },
+        scale50: () => { this.scale = 0.75 },
         scale100: () => { this.scale = 1 },
-        scale150: () => { this.scale = 1.5 },
-        scale200: () => { this.scale = 2 },
+        scale150: () => { this.scale = 1.25 },
+        scale200: () => { this.scale = 1.5 },
         hiddenAside: () => { this.isAsideVisible = !this.isAsideVisible }
       }
       if (command in commandMap) {
@@ -387,6 +443,30 @@ export default {
     },
     hiddenAside() {
       this.isAsideVisible = !this.isAsideVisible
+    },
+    groupedQuestionAnswer() {
+      const orderedQuestionTypes = []
+      let paperTotalCount = 0
+      const groupedItems = this.answer.answerItems.reduce((acc, item) => {
+        const questionType = item.questionType
+        if (!acc[questionType]) {
+          acc[questionType] = {
+            items: [],
+            totalScore: 0,
+            totalCount: 0
+          }
+          orderedQuestionTypes.push(questionType)
+        }
+        paperTotalCount += 1
+        acc[questionType].items.push(item)
+        acc[questionType].totalScore += parseInt(item.score, 10) || 0
+        acc[questionType].totalCount += 1
+        return acc
+      }, {})
+      this.questionTypeOrder = orderedQuestionTypes
+      this.groupedAnswerItems = groupedItems
+      this.totalCount = paperTotalCount
+      return groupedItems
     }
   },
   computed: {
@@ -417,15 +497,13 @@ export default {
       const totalQuestions = this.answer.answerItems ? this.answer.answerItems.length : 0
       return totalQuestions > 0 ? ((answeredCount / totalQuestions) * 100).toFixed(0) : 0
     },
-    groupedAnswerItems() {
-      return this.answer.answerItems.reduce((acc, item) => {
-        const questionType = item.questionType
-        if (!acc[questionType]) {
-          acc[questionType] = []
+    sortedGroupedAnswerItems() {
+      return this.questionTypeOrder.map(questionType => {
+        return {
+          questionType: questionType,
+          group: this.groupedAnswerItems[questionType]
         }
-        acc[questionType].push(item)
-        return acc
-      }, {})
+      }).filter(item => item.group)
     }
   }
 }
@@ -450,8 +528,7 @@ export default {
 }
 
 .header-padding {
-  padding: 0 10px;
-  font-size: 16px;
+  // font-size: 16px;
 }
 
 .el-tag {
@@ -461,16 +538,17 @@ export default {
 
 /* 进度条样式 */
 .progress-bar-container {
+  margin-top: 0;
   width: 60%;
   height: 30px;
-  border-radius: 5px;
+  border-radius: 4px;
   border: 1px solid green;
 }
 
 .progress-bar {
   height: 100%;
   background-color: #4caf50;
-  border-radius: 5px;
+  border-radius: 4px;
   text-align: center;
   justify-content: center;
   line-height: 30px;
@@ -530,15 +608,22 @@ export default {
   border-color: transparent rgb(248, 0, 0) transparent transparent;
 }
 
-.el-header,
+.remain-time-red {
+  color: red;
+}
+
+.el-header {
+  background-color: #1579de;
+  color: #fff;
+  font-size: 16px;
+}
+
 .el-footer {
-  background-color: #B3C0D1;
-  color: #333;
   font-size: 16px;
 }
 
 .el-main {
-  background-color: #E9EEF3;
+  background-color: #FFF;
   color: #333;
   font-size: 16px;
 }

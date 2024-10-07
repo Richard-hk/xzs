@@ -67,6 +67,8 @@ public class ExamPaper implements Serializable {
 
     private Integer taskExamId;
 
+    private Integer status;
+
     public Integer getId() {
         return id;
     }
@@ -185,5 +187,13 @@ public class ExamPaper implements Serializable {
 
     public void setTaskExamId(Integer taskExamId) {
         this.taskExamId = taskExamId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

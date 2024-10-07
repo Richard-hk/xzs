@@ -120,6 +120,8 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
         QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.fromCode(question.getQuestionType());
         switch (questionTypeEnum) {
             case SingleChoice:
+            case SingleChoice1:
+            case SingleChoice2:
             case TrueFalse:
                 questionEditRequestVM.setCorrect(question.getCorrect());
                 break;

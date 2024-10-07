@@ -82,7 +82,11 @@ public class QuestionController extends BaseApiController {
 
     private RestResponse validQuestionEditRequestVM(QuestionEditRequestVM model) {
         int qType = model.getQuestionType().intValue();
-        boolean requireCorrect = qType == QuestionTypeEnum.SingleChoice.getCode() || qType == QuestionTypeEnum.TrueFalse.getCode();
+        boolean requireCorrect = (qType == QuestionTypeEnum.
+                SingleChoice.getCode())||
+                (qType == QuestionTypeEnum.SingleChoice1.getCode())||
+                (qType == QuestionTypeEnum.SingleChoice2.getCode())
+                || qType == QuestionTypeEnum.TrueFalse.getCode();
         if (requireCorrect) {
             if (StringUtils.isBlank(model.getCorrect())) {
                 String errorMsg = ErrorUtil.parameterErrorFormat("correct", "不能为空");

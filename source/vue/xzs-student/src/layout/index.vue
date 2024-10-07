@@ -66,7 +66,6 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import loginApi from '@/api/login'
-import userApi from '@/api/user'
 export default {
   name: 'Layout',
   data () {

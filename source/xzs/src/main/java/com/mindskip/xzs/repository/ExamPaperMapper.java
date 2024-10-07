@@ -25,6 +25,8 @@ public interface ExamPaperMapper extends BaseMapper<ExamPaper> {
 
     Integer selectAllCount();
 
+    Integer updateStatus(ExamPaperPageRequestVM requestV);
+
     List<KeyValue> selectCountByDate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     int updateTaskPaper(@Param("taskId") Integer taskId,@Param("paperIds") List<Integer> paperIds);

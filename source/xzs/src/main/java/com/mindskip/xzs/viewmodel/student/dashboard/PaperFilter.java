@@ -8,6 +8,7 @@ public class PaperFilter {
     private Date dateTime;
     private Integer examPaperType;
     private Integer gradeLevel;
+    private Integer status;
 
     public Integer getUserId() {
         return userId;
@@ -39,5 +40,13 @@ public class PaperFilter {
 
     public void setGradeLevel(Integer gradeLevel) {
         this.gradeLevel = gradeLevel;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

@@ -1,26 +1,29 @@
 <template>
   <div class="lowin  lowin-blue">
-    <!-- <div class="lowin-brand">
-      <img src="@/assets/logo2.png" alt="logo" style="margin-top: 12px">
-    </div> -->
     <div class="lowin-wrapper">
+      <div class="lowin-brand">
+        <img src="@/assets/logo2.jpg" alt="logo" style="padding: 0 20px;">
+      </div>
       <div class="lowin-box lowin-login">
         <div class="lowin-box-inner">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
-            <p>2024年度执业药师职业资格考试模拟作答系统</p>
+            <p>{{this.$route.query.name}}</p>
             <div class="lowin-group">
               <label>准考证号 </label>
-              <el-input ref="userName" v-model="loginForm.userName" class="lowin-input" placeholder="用户名"
+              <el-input ref="userName" v-model="loginForm.userName" class="lowin-input" placeholder="准考证号"
                 name="userName" type="text" tabindex="1" auto-complete="on" />
             </div>
             <div class="lowin-group password-group">
-              <!-- <label>证件号码 <a href="#" class="forgot-link">忘记密码?</a></label> -->
+              <label>证件号码 </label>
               <el-input class="lowin-input" :key="passwordType" ref="password" v-model="loginForm.password"
                 :type="passwordType" placeholder="证件号码" name="password" tabindex="2" auto-complete="on"
                 @keyup.native="checkCapslock" @blur="capsTooltip = false" @keyup.enter.native="handleLogin" />
             </div>
-            <el-button :loading="loading" type="text" class="lowin-btn login-btn"
-              @click.native.prevent="handleLogin">登录</el-button>
+            <div class="button-container">
+              <el-button :loading="loading" type="text" class="lowin-btn login-btn"
+                @click.native.prevent="handleLogin">登录</el-button>
+              <el-button :loading="loading" type="info" class="reset-btn" @click="resetForm">重置</el-button>
+            </div>
           </el-form>
         </div>
       </div>
@@ -104,6 +107,12 @@ export default {
         this.$refs.password.focus()
       })
     },
+    resetForm() {
+      this.loginForm = {
+        userName: '',
+        password: ''
+      }
+    },
     handleLogin() {
       let _this = this
       this.$refs.loginForm.validate(valid => {
@@ -114,7 +123,7 @@ export default {
               _this.setUserName(_this.loginForm.userName)
               localStorage.removeItem(_this.loginForm.userName + '_' + _this.$route.query.id + '_remainTime')
               localStorage.removeItem(_this.loginForm.userName + '_' + _this.$route.query.id + '_examData')
-              _this.$router.push({ path: '/do?id=' + _this.$route.query.id })
+              _this.$router.push({ path: '/preview?id=' + _this.$route.query.id })
             } else {
               _this.loading = false
               _this.$message.error(result.message)
@@ -189,14 +198,10 @@ export default {
 
 .lowin .lowin-brand {
   overflow: hidden;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto -50px auto;
-  border-radius: 50%;
+  width: 100%;
+  /* margin: 0 auto -50px auto; */
   -webkit-box-shadow: 0 4px 40px rgba(0, 0, 0, .07);
   box-shadow: 0 4px 40px rgba(0, 0, 0, .07);
-  padding: 10px;
-  background-color: #fff;
   z-index: 1;
   position: relative;
 }
@@ -215,7 +220,7 @@ export default {
   background-color: #fff;
   -webkit-box-shadow: 0 7px 25px rgba(0, 0, 0, .08);
   box-shadow: 0 7px 25px rgba(0, 0, 0, .08);
-  padding: 60px 25px 25px 25px;
+  padding: 5px 25px 25px 25px;
   text-align: left;
   border-radius: 3px;
 }
@@ -267,6 +272,11 @@ export default {
   float: right;
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .lowin .lowin-box .lowin-input {
   background-color: var(--color-grey);
   color: var(--color-dark);
@@ -279,14 +289,28 @@ export default {
 
 .lowin .lowin-box .lowin-btn {
   display: inline-block;
-  width: 100%;
+  width: 50%;
   border: none;
   color: #fff;
   padding: 15px;
   border-radius: 3px;
   background-color: var(--color-primary);
-  -webkit-box-shadow: 0 2px 7px var(--color-semidark);
+  /* -webkit-box-shadow: 0 2px 7px var(--color-semidark); */
   box-shadow: 0 2px 7px var(--color-semidark);
+  font-weight: 700;
+  outline: 0;
+  cursor: pointer;
+  -webkit-transition: all .5s;
+  -o-transition: all .5s;
+  transition: all .5s;
+}
+
+.reset-btn {
+  display: inline-block;
+  width: 50%;
+  border: none;
+  padding: 15px;
+  border-radius: 3px;
   font-weight: 700;
   outline: 0;
   cursor: pointer;

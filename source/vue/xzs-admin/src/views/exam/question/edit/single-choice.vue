@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="form" ref="form" label-width="100px" v-loading="formLoading" :rules="rules">
-      <el-form-item label="年级：" prop="gradeLevel" required>
-        <el-select v-model="form.gradeLevel" placeholder="年级"  @change="levelChange" clearable>
+      <el-form-item label="级别：" prop="gradeLevel" required>
+        <el-select v-model="form.gradeLevel" placeholder="级别"  @change="levelChange" clearable>
           <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
         </el-select>
       </el-form-item>
@@ -21,7 +21,7 @@
            <el-button type="danger" size="mini" class="question-item-remove" icon="el-icon-delete" @click="questionItemRemove(index)"></el-button>
         </el-form-item>
       </el-form-item>
-      <el-form-item label="解析：" prop="analyze" required>
+      <el-form-item label="解析：" prop="analyze">
         <el-input v-model="form.analyze"  @focus="inputClick(form,'analyze')" />
       </el-form-item>
       <el-form-item label="分数：" prop="score" required>
@@ -69,7 +69,7 @@ export default {
     return {
       form: {
         id: null,
-        questionType: 1,
+        questionType: 10,
         gradeLevel: null,
         subjectId: null,
         title: '',
@@ -81,14 +81,14 @@ export default {
         ],
         analyze: '',
         correct: '',
-        score: '',
-        difficult: 0
+        score: '3',
+        difficult: 3
       },
       subjectFilter: null,
       formLoading: false,
       rules: {
         gradeLevel: [
-          { required: true, message: '请选择年级', trigger: 'change' }
+          { required: true, message: '请选择级别', trigger: 'change' }
         ],
         subjectId: [
           { required: true, message: '请选择学科', trigger: 'change' }
@@ -96,9 +96,9 @@ export default {
         title: [
           { required: true, message: '请输入题干', trigger: 'blur' }
         ],
-        analyze: [
-          { required: true, message: '请输入解析', trigger: 'blur' }
-        ],
+        // analyze: [
+        //   { required: true, message: '请输入解析', trigger: 'blur' }
+        // ],
         score: [
           { required: true, message: '请输入分数', trigger: 'blur' }
         ],
@@ -122,6 +122,7 @@ export default {
   },
   created () {
     let id = this.$route.query.id
+    this.form.questionType = this.$route.query.questionType
     let _this = this
     this.initSubject(function () {
       _this.subjectFilter = _this.subjects

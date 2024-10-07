@@ -1,9 +1,9 @@
 <template>
   <div style="line-height: 2" :style="computedStyle">
-    <div v-if="qType == 1" v-loading="qLoading" class="question-layout">
+    <div v-if="qType == 10 || qType==11 || qType==12" v-loading="qLoading" class="question-layout">
       <div class="q-title" v-html="question.title"></div>
     </div>
-    <div v-if="qType == 2" v-loading="qLoading" class="question-layout">
+    <div v-if="qType == 20" v-loading="qLoading" class="question-layout">
       <div class="q-title" v-html="question.title"></div>
     </div>
   </div>

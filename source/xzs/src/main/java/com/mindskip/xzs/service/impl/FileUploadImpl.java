@@ -16,32 +16,53 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 @Service
 public class FileUploadImpl implements FileUpload {
-    private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    private final SystemConfig systemConfig;
-
-    @Autowired
-    public FileUploadImpl(SystemConfig systemConfig) {
-        this.systemConfig = systemConfig;
-    }
+private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
+    private final String uploadDir = "/Users/Richard-hk/Documents/xzs/source/vue/"; // 替换为实际的 Nginx 静态文件目录
 
     @Override
-    public String uploadFile(InputStream inputStream, long size, String extName) {
-        QnConfig qnConfig = systemConfig.getQn();
-        Configuration cfg = new Configuration(Region.region2());
-        UploadManager uploadManager = new UploadManager(cfg);
-        Auth auth = Auth.create(qnConfig.getAccessKey(), qnConfig.getSecretKey());
-        String upToken = auth.uploadToken(qnConfig.getBucket());
-        try {
-            Response response = uploadManager.put(inputStream, null, upToken, null, null);
-            DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-            return qnConfig.getUrl() + "/" + putRet.key;
-        } catch (QiniuException ex) {
+    public String uploadFile(InputStream inputStream, long size, String fileName) {
+        File targetFile = new File(uploadDir + fileName);
+        try (FileOutputStream outStream = new FileOutputStream(targetFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outStream.write(buffer, 0, length);
+            }
+            return "http://localhost:8081/" + fileName; // 替换为实际的 Nginx 域名
+        } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
         }
         return null;
     }
+    // private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
+    // private final SystemConfig systemConfig;
+
+    // @Autowired
+    // public FileUploadImpl(SystemConfig systemConfig) {
+    //     this.systemConfig = systemConfig;
+    // }
+
+    // @Override
+    // public String uploadFile(InputStream inputStream, long size, String extName) {
+    //     QnConfig qnConfig = systemConfig.getQn();
+    //     Configuration cfg = new Configuration(Region.region2());
+    //     UploadManager uploadManager = new UploadManager(cfg);
+    //     Auth auth = Auth.create(qnConfig.getAccessKey(), qnConfig.getSecretKey());
+    //     String upToken = auth.uploadToken(qnConfig.getBucket());
+    //     try {
+    //         Response response = uploadManager.put(inputStream, null, upToken, null, null);
+    //         DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+    //         return qnConfig.getUrl() + "/" + putRet.key;
+    //     } catch (QiniuException ex) {
+    //         logger.error(ex.getMessage(), ex);
+    //     }
+    //     return null;
+    // }
 }

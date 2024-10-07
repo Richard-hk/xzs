@@ -1,21 +1,21 @@
 <template>
-  <div style="line-height: 2">
-    <div v-if="qType == 1" v-loading="qLoading">
+  <div style="line-height: 3">
+    <div v-if=" qType == 10 || qType == 11 || qType ==12" v-loading="qLoading">
       <div class="edit-checkbox-container">
         <span><i class="el-icon-edit" style="margin-right: 25px;"> 请作答</i></span>
         <el-radio-group v-model="answer.content" @change="handleChange('radio')">
           <el-radio v-for="item in question.items" :key="item.prefix" :label="item.prefix">
-            <span class="question-prefix">{{ item.prefix }}.</span>
+            <span class="question-prefix">{{ item.prefix }}</span>
           </el-radio>
         </el-radio-group>
       </div>
     </div>
-    <div v-else-if="qType == 2" v-loading="qLoading">
+    <div v-else-if="qType == 20" v-loading="qLoading">
       <div class="edit-checkbox-container">
         <span><i class="el-icon-edit" style="margin-right: 25px;"> 请作答</i></span>
         <el-checkbox-group v-model="answer.contentArray" @change="handleChange('checkbox')">
           <el-checkbox v-for="item in question.items" :key="item.prefix" :label="item.prefix">
-            <span class="question-prefix">{{ item.prefix }}.</span>
+            <span class="question-prefix">{{ item.prefix }}</span>
           </el-checkbox>
         </el-checkbox-group>
       </div>
@@ -69,5 +69,8 @@ export default {
 .edit-checkbox-container {
   display: flex;
   align-items: center;
+}
+.question-prefix {
+  font-size: 16px;
 }
 </style>

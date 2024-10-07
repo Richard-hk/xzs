@@ -156,6 +156,11 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
     }
 
     @Override
+    public Integer updateStatus(ExamPaperPageRequestVM requestVM) {
+        return examPaperMapper.updateStatus(requestVM);
+    }
+
+    @Override
     public List<Integer> selectMothCount() {
         Date startTime = DateTimeUtil.getMonthStartDay();
         Date endTime = DateTimeUtil.getMonthEndDay();
