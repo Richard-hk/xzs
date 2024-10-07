@@ -24,7 +24,7 @@ import java.io.InputStream;
 @Service
 public class FileUploadImpl implements FileUpload {
 private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    private final String uploadDir = "/Users/Richard-hk/Documents/xzs/source/vue/"; // 替换为实际的 Nginx 静态文件目录
+    private final String uploadDir = "/root/web/assets/img/"; // 替换为实际的 Nginx 静态文件目录
 
     @Override
     public String uploadFile(InputStream inputStream, long size, String fileName) {
@@ -35,7 +35,7 @@ private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
             while ((length = inputStream.read(buffer)) > 0) {
                 outStream.write(buffer, 0, length);
             }
-            return "http://localhost:8081/" + fileName; // 替换为实际的 Nginx 域名
+            return "http://129.204.20.76/assets/img/" + fileName; // 替换为实际的 Nginx 域名
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
         }
