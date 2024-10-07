@@ -8,7 +8,7 @@
             <div>
               <router-link to="index">
               <img
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD4l+7UAAAACXZwQAAAC2yPDaAAAAAElFTkSuQmCC"
+                src="@/assets/doHeader.png"
                 style="width: 60px; height: 100%; margin: 0 10px 0 20px">
             </router-link>
             </div>
@@ -313,11 +313,11 @@ export default {
       let questionType = indexAnswer.questionType
       let score = indexAnswer.score || 0
       let group = this.groupedAnswerItems[questionType]
-      let msg1 = this.questionTypeMapChinese[index + 1] + ' 、'
+      // let msg1 = this.questionTypeMapChinese[index + 1] + ' 、'
       let msg2 = this.questionTypeMap[questionType]
       let msg3 = '共' + group.totalCount + '题，共' + group.totalScore + '分，当前第' + (index + 1) + '题，当前题分数' + score + '分。'
       let msg4 = ' （ ' + msg3 + this.questionTypeMapDesc[questionType] + '）'
-      this.index_tag_show = msg1 + msg2 + msg4
+      this.index_tag_show = msg2 + msg4
     },
     markQuestion() {
       this.answer.answerItems[this.activeQuestionIndex].marked = !this.answer.answerItems[this.activeQuestionIndex].marked

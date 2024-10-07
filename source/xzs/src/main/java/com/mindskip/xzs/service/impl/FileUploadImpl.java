@@ -24,7 +24,7 @@ import java.io.InputStream;
 @Service
 public class FileUploadImpl implements FileUpload {
 private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    private final String uploadDir = "/root/web/assets/img/"; // 替换为实际的 Nginx 静态文件目录
+    private final String uploadDir = "/usr/share/nginx/html/assets/img/"; // 替换为实际的 Nginx 静态文件目录
 
     @Override
     public String uploadFile(InputStream inputStream, long size, String fileName) {
