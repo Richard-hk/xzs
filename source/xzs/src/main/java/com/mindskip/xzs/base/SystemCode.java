@@ -22,7 +22,7 @@ public enum SystemCode {
     /**
      * UNAUTHORIZED
      */
-    AuthError(402, "用户名或密码错误"),
+    AuthError(402, "用户名或身份证号错误"),
     /**
      * InnerError
      */

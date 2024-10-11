@@ -3,14 +3,13 @@
 
     <el-header style="padding: 0; height: 80px;">
       <el-row>
-        <el-col style="width: 250px; flex: none; height: 80px;  font-size: 14px; overflow: hidden;">
+        <el-col v-if="isHeaderLeftVisiable"
+          style="width: 250px; flex: none; height: 80px;  font-size: 14px; overflow: hidden;">
           <div style="display:flex;height: 80px;  ">
             <div>
               <router-link to="index">
-              <img
-                src="@/assets/doHeader.png"
-                style="width: 60px; height: 100%; margin: 0 10px 0 20px">
-            </router-link>
+                <img src="@/assets/doHeader.png" style="width: 60px; height: 100%; margin: 0 10px 0 20px">
+              </router-link>
             </div>
             <div style="height: 80px; ">
               <p>{{ userName }}</p>
@@ -18,17 +17,19 @@
             </div>
           </div>
         </el-col>
-        <el-col style="width: calc(100% - 250px);flex: 1;">
+        <el-col :style="{ width: isHeaderLeftVisiable ? 'calc(100% - 250px)' : '100%' }">
           <div style="display: flex;align-items: center;">
             <div>
               <span class="header-padding" style="margin-left: 10px; font-size: 20px; font-weight: bold;">{{ form.name
                 }}</span>
             </div>
-            <div style="margin-left: auto;margin-right: 25px; font-size: 14px;font-weight: bold;">
+            <div v-if="isHeaderLeftVisiable"
+              style="margin-left: auto;margin-right: 25px; font-size: 14px;font-weight: bold;">
               <p>试卷题数：{{ this.totalCount }}</p>
               <p>试卷总分：{{ form.score }}</p>
             </div>
-            <div style="margin-right: 25px; font-size: 14px; font-weight: bold;">
+            <div :style="{ marginRight: isHeaderLeftVisiable ? '25px' : '2px' }"
+              style=" font-size: 14px; font-weight: bold;">
               <p>考试时间：{{ form.suggestTime }}分钟</p>
               <p>
                 <label>剩余时间：</label>
@@ -38,7 +39,8 @@
               </p>
             </div>
             <el-button type="danger" @click="submitForm(false)"
-              style="margin:15px 35px 15px 0; height:50px; font-size: 20px;">提交</el-button>
+              :style="{ marginRight: isHeaderLeftVisiable ? '35px' : '2px' }"
+              style=" height:50px; font-size: 20px;">提交</el-button>
           </div>
         </el-col>
       </el-row>
@@ -78,7 +80,9 @@
             <el-row style=" line-height: 1.5;">{{ index_tag_show }}</el-row>
           </div>
           <el-row style="height:calc(100% - 60px);  ">
-            <el-col :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
+
+            <el-col :span="24" v-if="!isHeaderLeftVisiable"
+              style="height: 50%; overflow: auto;  border-bottom: 1px solid #dcdfe6;">
               <el-form :model="form" ref="form" v-loading="formLoading">
                 <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
                   class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
@@ -89,7 +93,31 @@
                 </el-form-item>
               </el-form>
             </el-col>
-            <el-col :span="12" style="height: 100%; overflow: auto;">
+            <el-col v-else :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionTittle :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                      :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+
+            <el-col :span="24" v-if="!isHeaderLeftVisiable" style="height: 50%; overflow: auto;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionSelect :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                      :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+
+            <el-col v-else :span="12" style="height: 100%; overflow: auto;">
               <el-form :model="form" ref="form" v-loading="formLoading">
                 <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
                   class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
@@ -114,7 +142,11 @@
         </el-footer>
 
         <el-footer style="height: 68px; padding: 16px 35px 16px 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; ">
+          <div :style="{
+            display: 'flex',
+            flexDirection: isFooterVisiable ? 'row' : 'column',
+            justifyContent: isFooterVisiable ? 'space-between' : 'flex-start',
+          }">
             <div style="display: flex; font-size: 40px;">
               <el-button type="primary" @click="hiddenAside" plain style="padding: 0px; font-size: 16px;">
                 <i :class="{
@@ -125,7 +157,7 @@
               <el-button @click="previousQuestion" style="font-size: 16px;">上一题</el-button>
               <el-button type="primary" @click="nextQuestion" style="font-size: 16px">下一题</el-button>
             </div>
-            <div style="display: flex;">
+            <div style="display: flex;" :style="{marginTop: isFooterVisiable ? '0px' : '20px'}">
               <el-button type="warning" @click="zoomOut" plain style="font-size: 16px">缩小</el-button>
               <el-button type="warning" @click="zoomIn" plain style="font-size: 16px">放大</el-button>
               <el-button type="warning" @click="markQuestion" plain style="font-size: 16px">
@@ -134,9 +166,10 @@
                   'el-icon-star-on': this.answer.answerItems[this.activeQuestionIndex]?.marked
                 }"></i>
                 标记</el-button>
-              <el-button type="warning" @click="showCalculator" plain style="font-size: 16px">计算器</el-button>
+              <el-button v-if="isHeaderLeftVisiable" type="warning" @click="showCalculator" plain
+                style="font-size: 16px">计算器</el-button>
 
-              <el-dropdown @command="settingHandleCommand" style="margin-left: 10px;">
+              <el-dropdown v-if="isHeaderLeftVisiable" @command="settingHandleCommand" style="margin-left: 10px;">
                 <el-button type="primary" icon="el-icon-setting" style="font-size: 16px">
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
@@ -209,7 +242,10 @@ export default {
       autoNextExam: false,
       suggestTime: 0,
       userExamId: null,
+      isHeaderLeftVisiable: true,
+      isFooterVisiable: true,
       isAsideVisible: true,
+      windowWidth: window.innerWidth,
       groupedAnswerItems: [],
       index_tag_show: '',
       questionTypeOrder: [],
@@ -263,6 +299,11 @@ export default {
   },
   beforeDestroy() {
     window.clearInterval(this.timer)
+    window.removeEventListener('resize', this.handleResize)
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize)
+    this.checkWindowWidth()
   },
   methods: {
     loadFromLocalStorage() {
@@ -467,6 +508,15 @@ export default {
       this.groupedAnswerItems = groupedItems
       this.totalCount = paperTotalCount
       return groupedItems
+    },
+    handleResize() {
+      this.windowWidth = window.innerWidth
+      this.checkWindowWidth()
+    },
+    checkWindowWidth() {
+      this.isAsideVisible = this.windowWidth > 768 // 自定义宽度
+      this.isHeaderLeftVisiable = this.windowWidth > 768 // 自定义宽度
+      this.isFooterVisiable = this.windowWidth > 480 // 自定义宽度
     }
   },
   computed: {
@@ -510,6 +560,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media (max-width: 768px) {
+  el-button {
+    font-size: 0.8rem;
+    /* 窄屏时缩小按钮字体 */
+  }
+
+  .el-icon {
+    font-size: 1.2em;
+    /* 窄屏时缩小图标字体 */
+  }
+}
+
 .align-center {
   text-align: center;
 }

@@ -83,7 +83,7 @@ public class UserController extends BaseApiController {
             }
 
             if (StringUtils.isBlank(model.getPassword())) {
-                return new RestResponse<>(3, "密码不能为空");
+                return new RestResponse<>(3, "身份证号不能为空");
             }
         }
         if (StringUtils.isBlank(model.getBirthDay())) {

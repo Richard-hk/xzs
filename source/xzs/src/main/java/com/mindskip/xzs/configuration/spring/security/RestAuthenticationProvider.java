@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 /**
  * @version 3.5.0
- * @description: 登录用户名密码验证
+ * @description: 登录用户名身份证号验证
  * Copyright (C), 2020-2024, 武汉思维跳跃科技有限公司
  * @date 2021/12/25 9:45
  */
@@ -49,12 +49,12 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 
         com.mindskip.xzs.domain.User user = userService.getUserByUserName(username);
         if (user == null) {
-            throw new UsernameNotFoundException("用户名或密码错误");
+            throw new UsernameNotFoundException("用户名或身份证号错误");
         }
 
         boolean result = authenticationService.authUser(user, username, password);
         if (!result) {
-            throw new BadCredentialsException("用户名或密码错误");
+            throw new BadCredentialsException("用户名或身份证号错误");
         }
 
         UserStatusEnum userStatusEnum = UserStatusEnum.fromCode(user.getStatus());

@@ -5,10 +5,10 @@
       <el-form-item label="用户名："  prop="userName" required>
         <el-input v-model="form.userName"></el-input>
       </el-form-item>
-      <el-form-item label="密码："  required>
+      <el-form-item label="身份证号："  required>
         <el-input v-model="form.password"></el-input>
       </el-form-item>
-      <el-form-item label="真实姓名：" prop="realName" required>
+      <el-form-item label="真实姓名：" prop="realName" hidden >
         <el-input v-model="form.realName"></el-input>
       </el-form-item>
       <el-form-item label="年龄：">
@@ -54,7 +54,7 @@ export default {
         id: null,
         userName: '',
         password: '',
-        realName: '',
+        realName: 'test',
         role: 1,
         status: 1,
         age: '',

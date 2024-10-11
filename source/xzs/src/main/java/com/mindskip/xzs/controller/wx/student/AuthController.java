@@ -41,11 +41,11 @@ public class AuthController extends BaseWXApiController {
     public RestResponse bind(@Valid BindInfo model) {
         User user = userService.getUserByUserName(model.getUserName());
         if (user == null) {
-            return RestResponse.fail(2, "用户名或密码错误");
+            return RestResponse.fail(2, "用户名或身份证号错误");
         }
         boolean result = authenticationService.authUser(user, model.getUserName(), model.getPassword());
         if (!result) {
-            return RestResponse.fail(2, "用户名或密码错误");
+            return RestResponse.fail(2, "用户名或身份证号错误");
         }
         UserStatusEnum userStatusEnum = UserStatusEnum.fromCode(user.getStatus());
         if (UserStatusEnum.Disable == userStatusEnum) {

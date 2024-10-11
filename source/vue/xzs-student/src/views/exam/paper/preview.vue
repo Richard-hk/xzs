@@ -1,7 +1,7 @@
 <template>
     <div class="exam-page" style="height: 100vh;">
         <el-row>
-            <el-col :span="14" :offset="5" style="height: 100%;">
+            <el-col :span="16" :offset="4" style="height: 100%;">
                 <el-card class="exam-card" style="padding: 0; height: 100%;">
                     <div class="top">
                         <div class="exam-layout">

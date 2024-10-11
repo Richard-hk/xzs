@@ -24,7 +24,7 @@ public class ExamPaperEditRequestVM {
 
     private List<String> limitDateTime;
 
-    @Size(min = 1,message = "请添加试卷标题")
+    @Size(min = 1,message = "请添加试卷题目")
     @Valid
     private List<ExamPaperTitleItemVM> titleItems;
 
