@@ -52,7 +52,7 @@
     </el-form>
 
     <div class="account-foot-copyright">
-      <span>Copyright © 2019-2024 </span>
+      <span>Copyright © 2024-2025 </span>
     </div>
   </div>
 </template>
