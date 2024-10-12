@@ -324,7 +324,6 @@ export default {
       return formatSeconds(theTime)
     },
     timeReduce() {
-      console.log('remainTime:', this.remainTime)
       this.timer = setInterval(() => {
         if (this.remainTime <= 0) {
           this.submitForm(true)
@@ -387,14 +386,25 @@ export default {
       window.clearInterval(this.timer)
       this.formLoading = true
       const uncompletedItems = this.answer.answerItems.filter(item => !item.completed)
-      console.log('uncompletedItems:', uncompletedItems.length, timeout)
       if (uncompletedItems.length > 0 && timeout === false) {
         this.$alert('还有' + uncompletedItems.length + '道未完成的题目，请先完成后再提交', '提示', {
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          showCancelButton: true,
+          cancelButtonText: '直接提交',
+          callback: (action) => {
+            if (action === 'confirm') {
+              this.formLoading = false // 用户选择“确定”
+            } else if (action === 'cancel') {
+              this.directSubmit() // 用户选择 “直接提交”
+            }
+          }
         })
         this.formLoading = false
         return
       }
+      this.directSubmit()
+    },
+    directSubmit() {
       this.answer.id = this.form.id
       examPaperAnswerApi.answerSubmit(this.answer).then(re => {
         if (re.code === 1) {
