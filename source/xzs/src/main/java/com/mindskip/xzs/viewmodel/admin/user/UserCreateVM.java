@@ -14,7 +14,6 @@ public class UserCreateVM {
 
     private String password;
 
-    @NotBlank
     private String realName;
 
     private String age;

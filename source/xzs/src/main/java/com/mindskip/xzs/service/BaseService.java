@@ -1,5 +1,7 @@
 package com.mindskip.xzs.service;
 
+import java.util.List;
+
 /**
  * service接口，和mybatis generator 配套使用
  *
@@ -21,6 +23,9 @@ public interface BaseService<T> {
      * @return int
      */
     int insert(T record);
+
+    int batchInsert(List<T> record);
+
 
     /**
      * 插入不为null的数据

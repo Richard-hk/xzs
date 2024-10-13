@@ -24,9 +24,9 @@
                 }}</span>
             </div>
             <div v-if="isHeaderLeftVisiable"
-              style="margin-left: auto;margin-right: 25px; font-size: 14px;font-weight: bold;">
-              <p>试卷题数：{{ this.totalCount }}</p>
-              <p>试卷总分：{{ form.score }}</p>
+              style="margin-left: auto;margin-right: 0; font-size: 14px;font-weight: bold;">
+              <!-- <p>试卷题数：{{ this.totalCount }}</p> -->
+              <!-- <p>试卷总分：{{ form.score }}</p> -->
             </div>
             <div :style="{ marginRight: isHeaderLeftVisiable ? '25px' : '2px' }"
               style=" font-size: 14px; font-weight: bold;">

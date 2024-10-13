@@ -336,17 +336,18 @@
 		(#{userUuid}::uuid,#{userName},#{password},#{realName},#{age},#{lastActiveTime})
 	</insert>
 
-  <insert id="insertUsers" parameterType="java.util.List"
-          useGeneratedKeys="true" keyProperty="id">
-    insert into t_user
-    (user_uuid,user_name,password,real_name,age,last_active_time)
-    values
-    <foreach collection="list" item="item" index="index"
-             separator=",">
-      (#{item.userUuid}::uuid,#{item.userName},#{item.password},#{item.realName},#{item.age},
-      #{item.lastActiveTime})
-    </foreach>
-  </insert>
+<insert id="insertUsers" parameterType="java.util.List">
+  INSERT INTO t_user (user_uuid, user_name, password,create_time,modify_time,deleted,status,role)
+  VALUES 
+  <foreach collection="list" item="item" index="index" separator=",">
+    (#{item.userUuid}::uuid, #{item.userName}, #{item.password},#{item.createTime,jdbcType=TIMESTAMP},
+     #{item.modifyTime,jdbcType=TIMESTAMP},#{item.deleted,jdbcType=BIT},#{item.status,jdbcType=INTEGER},#{item.role,jdbcType=INTEGER})
+  </foreach>
+  ON CONFLICT (user_name) DO UPDATE SET
+  password = EXCLUDED.password,
+  modify_time= EXCLUDED.modify_time,
+  status=EXCLUDED.status
+</insert>
 
 
   <update id="updateUser" parameterType="com.mindskip.xzs.domain.User">

@@ -108,7 +108,6 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Transactional(rollbackFor = BusinessException.class)
     public void insertUsers(List<User> users) {
         userMapper.insertUsers(users);
-        throw new BusinessException("test BusinessException roll back");
     }
 
     @Override

@@ -4,10 +4,12 @@ import com.mindskip.xzs.base.BaseApiController;
 import com.mindskip.xzs.base.RestResponse;
 import com.mindskip.xzs.base.SystemCode;
 import com.mindskip.xzs.domain.Question;
+import com.mindskip.xzs.domain.Subject;
 import com.mindskip.xzs.domain.TextContent;
 import com.mindskip.xzs.domain.enums.QuestionTypeEnum;
 import com.mindskip.xzs.domain.question.QuestionObject;
 import com.mindskip.xzs.service.QuestionService;
+import com.mindskip.xzs.service.SubjectService;
 import com.mindskip.xzs.service.TextContentService;
 import com.mindskip.xzs.utility.*;
 import com.mindskip.xzs.viewmodel.admin.question.QuestionEditRequestVM;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController("AdminQuestionController")
 @RequestMapping(value = "/api/admin/question")
@@ -26,11 +30,13 @@ public class QuestionController extends BaseApiController {
 
     private final QuestionService questionService;
     private final TextContentService textContentService;
+    private final SubjectService subjectService;
 
     @Autowired
-    public QuestionController(QuestionService questionService, TextContentService textContentService) {
+    public QuestionController(QuestionService questionService, TextContentService textContentService,SubjectService subjectService) {
         this.questionService = questionService;
         this.textContentService = textContentService;
+        this.subjectService = subjectService;
     }
 
     @RequestMapping(value = "/page", method = RequestMethod.POST)
@@ -104,4 +110,31 @@ public class QuestionController extends BaseApiController {
         }
         return RestResponse.ok();
     }
-}
+
+    @RequestMapping(value = "/batchInsert", method = RequestMethod.POST)
+    public RestResponse batchInsert(@RequestBody @Valid List<QuestionEditRequestVM> models) {
+        List<Subject> subjects = subjectService.allSubject();
+        for (QuestionEditRequestVM model : models) {
+            RestResponse validQuestionEditRequestResult = validQuestionEditRequestVM(model);
+            if (validQuestionEditRequestResult.getCode() != SystemCode.OK.getCode()) {
+                return validQuestionEditRequestResult;
+            }
+            Subject tmpSubject = subjects.stream()
+                .filter(item -> item.getName().equals(model.getSubjectName()) && item.getLevel().equals(model.getGradeLevel()))
+                .findFirst()
+                .orElse(null);
+            if (tmpSubject == null) {
+                String errorMsg = "科目 " + model.getSubjectName() + " 和级别 "+model.getGradeLevelName()+" 不匹配";
+                return new RestResponse<>(SystemCode.ParameterValidError.getCode(), errorMsg);
+            }
+            int subjectId = tmpSubject.getId();
+            model.setSubjectId(subjectId);
+        }
+        models.stream()
+            .map(model -> {
+                Question question = questionService.insertFullQuestion(model, getCurrentUser().getId());
+                return question;
+            })
+            .collect(Collectors.toList());
+        return RestResponse.ok();
+    }}

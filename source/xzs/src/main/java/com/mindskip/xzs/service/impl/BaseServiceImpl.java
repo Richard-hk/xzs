@@ -2,6 +2,8 @@ package com.mindskip.xzs.service.impl;
 
 import com.mindskip.xzs.repository.BaseMapper;
 import com.mindskip.xzs.service.BaseService;
+import java.util.List;
+
 
 public abstract class BaseServiceImpl<T> implements BaseService<T> {
 
@@ -20,6 +22,11 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     @Override
     public int insert(T record) {
         return baseMapper.insert(record);
+    }
+
+    @Override
+    public int batchInsert(List<T> record) {
+        return baseMapper.batchInsert(record);
     }
 
     @Override

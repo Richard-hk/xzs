@@ -1,10 +1,14 @@
 package com.mindskip.xzs.repository;
 
+import java.util.List;
+
 public interface BaseMapper<T> {
 
     int deleteByPrimaryKey(Integer id);
 
     int insert(T record);
+
+    int batchInsert(List<T> record);
 
     int insertSelective(T record);
 

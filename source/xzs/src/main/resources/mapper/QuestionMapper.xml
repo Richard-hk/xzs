@@ -216,6 +216,27 @@
       #{id}
     </foreach>
   </select>
+<insert id="batchInsert" parameterType="java.util.List">
+  INSERT INTO t_question (question_type, subject_id,
+    score, grade_level, difficult,
+    correct, info_text_content_id, create_user,
+    status, create_time, deleted)
+  VALUES
+  <foreach collection="list" item="item" separator=",">
+    (#{item.questionType, jdbcType=INTEGER}, 
+     #{item.subjectId, jdbcType=INTEGER},
+     #{item.score, jdbcType=INTEGER}, 
+     #{item.gradeLevel, jdbcType=INTEGER}, 
+     #{item.difficult, jdbcType=INTEGER},
+     #{item.correct, jdbcType=VARCHAR}, 
+     #{item.infoTextContentId, jdbcType=INTEGER}, 
+     #{item.createUser, jdbcType=INTEGER}, 
+     #{item.status, jdbcType=INTEGER}, 
+     #{item.createTime, jdbcType=TIMESTAMP}, 
+     #{item.deleted, jdbcType=BIT})
+  </foreach>
+</insert>
+
 
 
   <select id="selectAllCount"  resultType="java.lang.Integer">

@@ -2,6 +2,7 @@ package com.mindskip.xzs.controller.admin;
 
 import com.mindskip.xzs.base.BaseApiController;
 import com.mindskip.xzs.base.RestResponse;
+import com.mindskip.xzs.domain.enums.RoleEnum;
 import com.mindskip.xzs.domain.other.KeyValue;
 import com.mindskip.xzs.domain.User;
 import com.mindskip.xzs.domain.UserEventLog;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @RestController("AdminUserController")
@@ -147,5 +149,34 @@ public class UserController extends BaseApiController {
         List<KeyValue> keyValues = userService.selectByUserName(userName);
         return RestResponse.ok(keyValues);
     }
+
+@RequestMapping(value = "/insertUsers", method = RequestMethod.POST)
+public RestResponse batchInsert(@RequestBody @Valid List<UserCreateVM> models) {
+    if (models == null || models.isEmpty()) {
+        return new RestResponse<>(400, "用户数据不能为空");
+    }
+    List<User> users = models.stream()
+        .map(model -> {
+            User user = modelMapper.map(model, User.class);
+            user.setUserName(model.getUserName());
+            System.out.println(model.getUserName());
+            user.setPassword(authenticationService.pwdEncode(model.getPassword()));
+            user.setUserUuid(UUID.randomUUID().toString());
+            user.setRole(RoleEnum.STUDENT.getCode());
+            user.setStatus(UserStatusEnum.Enable.getCode());
+            user.setCreateTime(new Date());
+            user.setModifyTime(new Date());
+            user.setLastActiveTime(new Date());
+            user.setDeleted(false);
+            return user;
+        })
+        .collect(Collectors.toList());
+    try {
+        userService.insertUsers(users);
+        return RestResponse.ok("批量插入成功");
+    } catch (Exception e) {
+        return new RestResponse<>(500, "批量插入失败：" + e.getMessage());
+    }
+}
 
 }

@@ -15,6 +15,10 @@ public class QuestionEditRequestVM {
     private Integer questionType;
     @NotNull
     private Integer subjectId;
+
+    private String subjectName;
+    private String gradeLevelName;
+
     @NotBlank
     private String title;
 
@@ -22,7 +26,6 @@ public class QuestionEditRequestVM {
 
     @Valid
     private List<QuestionEditItemVM> items;
-    @NotBlank
     private String analyze;
 
     private List<String> correctArray;
@@ -130,5 +133,17 @@ public class QuestionEditRequestVM {
 
     public void setItemOrder(Integer itemOrder) {
         this.itemOrder = itemOrder;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getGradeLevelName() {
+        return gradeLevelName;
     }
 }
