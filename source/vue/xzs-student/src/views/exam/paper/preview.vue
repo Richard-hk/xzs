@@ -8,7 +8,7 @@
                             <div class="user-info">
                                 <p>姓名：XXX</p>
                                 <p>准考证号：{{ userName }}</p>
-                                <p>证件号：11111111111111111</p>
+                                <p>证件号：xxxxxxxxxxxxxxx</p>
                             </div>
                             <div class="exam-info">
                                 <p>考试类型：正常考试</p>

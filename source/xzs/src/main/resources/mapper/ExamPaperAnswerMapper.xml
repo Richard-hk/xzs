@@ -19,18 +19,18 @@
     <result column="task_exam_id" jdbcType="INTEGER" property="taskExamId" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, exam_paper_id, paper_name, paper_type, subject_id, system_score, user_score,
-    paper_score, question_correct, question_count, do_time, status, create_user, create_time,
+    a.id, exam_paper_id, paper_name, paper_type, subject_id, system_score, user_score,
+    paper_score, question_correct, question_count, do_time, a.status, create_user, a.create_time,
     task_exam_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from t_exam_paper_answer
+    from t_exam_paper_answer a
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_exam_paper_answer
+    delete from t_exam_paper_answer a
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mindskip.xzs.domain.ExamPaperAnswer" useGeneratedKeys="true" keyProperty="id">
@@ -218,7 +218,7 @@
   <select id="studentPage" resultMap="BaseResultMap" parameterType="com.mindskip.xzs.viewmodel.student.exampaper.ExamPaperAnswerPageVM">
     SELECT
     <include refid="Base_Column_List"/>
-    FROM t_exam_paper_answer
+    from t_exam_paper_answer a
     <where>
         and create_user = #{createUser}
      <if test="subjectId != null">
@@ -229,14 +229,14 @@
 
 
   <select id="selectAllCount"  resultType="java.lang.Integer">
-		SELECT count(*) from t_exam_paper_answer
+		SELECT count(*) from t_exam_paper_answer a
   </select>
 
 
   <select id="selectCountByDate"  resultType="com.mindskip.xzs.domain.other.KeyValue">
 		SELECT create_time as name,COUNT(create_time) as value from
 		        (
-				  SELECT to_char(create_time,'yyyy-mm-dd') as create_time from t_exam_paper_answer
+				  SELECT to_char(create_time,'yyyy-mm-dd') as create_time from t_exam_paper_answer a
 					WHERE  create_time  between  #{startTime}  and  #{endTime}
 				) a
 		GROUP BY create_time
@@ -246,7 +246,7 @@
   <select id="getByPidUid" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from t_exam_paper_answer
+    from t_exam_paper_answer a
     where exam_paper_id = #{pid} and create_user=#{uid}
     limit 1
   </select>
@@ -254,11 +254,17 @@
   <select id="adminPage" resultMap="BaseResultMap" parameterType="com.mindskip.xzs.viewmodel.admin.paper.ExamPaperAnswerPageRequestVM">
     SELECT
     <include refid="Base_Column_List"/>
-    FROM t_exam_paper_answer
+    from t_exam_paper_answer a
+    left join t_user t
+    on a.create_user = t.id
     <where>
       <if test="subjectId != null">
         and subject_id = #{subjectId}
       </if>
+      <if test="userName != null and userName !=''">
+        and user_name = #{userName}
+      </if>
+
     </where>
   </select>
 

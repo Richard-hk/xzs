@@ -24,18 +24,21 @@ import java.io.InputStream;
 @Service
 public class FileUploadImpl implements FileUpload {
 private final Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    private final String uploadDir = "/usr/share/nginx/html/assets/img/"; // 替换为实际的 Nginx 静态文件目录
+    private final String uploadDir = "/usr/share/nginx/html/assets/img/";
 
     @Override
     public String uploadFile(InputStream inputStream, long size, String fileName) {
-        File targetFile = new File(uploadDir + fileName);
+        long timestamp = System.currentTimeMillis();
+
+        String newFileName = timestamp+"_"+fileName;
+        File targetFile = new File(uploadDir + newFileName);
         try (FileOutputStream outStream = new FileOutputStream(targetFile)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {
                 outStream.write(buffer, 0, length);
             }
-            return "http://129.204.20.76/assets/img/" + fileName; // 替换为实际的 Nginx 域名
+            return "http://129.204.20.76/assets/img/" + newFileName;
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
         }

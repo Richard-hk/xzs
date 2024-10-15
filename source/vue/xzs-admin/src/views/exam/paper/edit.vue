@@ -59,7 +59,7 @@
           <el-button type="warning" size="mini" v-for="item in editUrlEnum" :key="item.key"
             @click="addTitle(item.key, item.name)">{{ item.name }}
           </el-button>
-          <el-button slot="reference" type="success" style="margin-left: 10px;">添加</el-button>
+          <el-button slot="reference" type="success" style="margin-left: 10px;">添加题目</el-button>
         </el-popover>
       </el-form-item>
     </el-form>
@@ -237,9 +237,14 @@ export default {
     },
     confirmQuestionSelect () {
       let _this = this
-      this.questionPage.multipleSelection.forEach(q => {
-        questionApi.select(q.id).then(re => {
-          _this.currentTitleItem.questionItems.push(re.response)
+      const promises = this.questionPage.multipleSelection.map(q => {
+        return questionApi.select(q.id).then(re => {
+          return { question: re.response, id: q.id }
+        })
+      })
+      Promise.all(promises).then(results => {
+        results.forEach(result => {
+          _this.currentTitleItem.questionItems.push(result.question)
         })
       })
       this.questionPage.showDialog = false

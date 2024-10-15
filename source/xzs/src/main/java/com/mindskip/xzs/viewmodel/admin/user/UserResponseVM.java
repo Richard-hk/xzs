@@ -1,7 +1,9 @@
 package com.mindskip.xzs.viewmodel.admin.user;
 
 import com.mindskip.xzs.domain.User;
+import com.mindskip.xzs.service.impl.AuthenticationServiceImpl;
 import com.mindskip.xzs.utility.DateTimeUtil;
+import com.mindskip.xzs.utility.RsaUtil;
 import com.mindskip.xzs.viewmodel.BaseVM;
 
 
@@ -12,6 +14,8 @@ public class UserResponseVM extends BaseVM {
     private String userUuid;
 
     private String userName;
+
+    private String password;
 
     private String realName;
 
@@ -165,4 +169,8 @@ public class UserResponseVM extends BaseVM {
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
+
+    public void setPassword(String password){this.password = password;}
+
+    public String getPassword(){return password;}
 }

@@ -13,7 +13,7 @@
             </div>
             <div style="height: 80px; ">
               <p>{{ userName }}</p>
-              <p>111111111111111111</p>
+              <p>xxxxxxxxxxxxxxx</p>
             </div>
           </div>
         </el-col>
@@ -165,7 +165,8 @@
                   'el-icon-star-off': this.answer.answerItems[this.activeQuestionIndex]?.marked == false,
                   'el-icon-star-on': this.answer.answerItems[this.activeQuestionIndex]?.marked
                 }"></i>
-                标记</el-button>
+                {{ this.answer.answerItems[this.activeQuestionIndex]?.marked ? '取消' : '标记' }}
+                </el-button>
               <el-button v-if="isHeaderLeftVisiable" type="warning" @click="showCalculator" plain
                 style="font-size: 16px">计算器</el-button>
 

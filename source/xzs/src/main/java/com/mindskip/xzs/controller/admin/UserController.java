@@ -2,6 +2,7 @@ package com.mindskip.xzs.controller.admin;
 
 import com.mindskip.xzs.base.BaseApiController;
 import com.mindskip.xzs.base.RestResponse;
+import com.mindskip.xzs.configuration.property.SystemConfig;
 import com.mindskip.xzs.domain.enums.RoleEnum;
 import com.mindskip.xzs.domain.other.KeyValue;
 import com.mindskip.xzs.domain.User;
@@ -11,6 +12,7 @@ import com.mindskip.xzs.service.AuthenticationService;
 import com.mindskip.xzs.service.UserEventLogService;
 import com.mindskip.xzs.service.UserService;
 import com.mindskip.xzs.utility.DateTimeUtil;
+import com.mindskip.xzs.utility.RsaUtil;
 import com.mindskip.xzs.viewmodel.admin.user.*;
 import com.mindskip.xzs.utility.PageInfoHelper;
 import com.github.pagehelper.PageInfo;
@@ -33,12 +35,15 @@ public class UserController extends BaseApiController {
     private final UserService userService;
     private final UserEventLogService userEventLogService;
     private final AuthenticationService authenticationService;
+    private final SystemConfig systemConfig;
 
     @Autowired
-    public UserController(UserService userService, UserEventLogService userEventLogService, AuthenticationService authenticationService) {
+    public UserController(UserService userService, UserEventLogService userEventLogService, AuthenticationService authenticationService, SystemConfig systemConfig) {
         this.userService = userService;
         this.userEventLogService = userEventLogService;
         this.authenticationService = authenticationService;
+        this.systemConfig = systemConfig;
+
     }
 
 
@@ -65,6 +70,11 @@ public class UserController extends BaseApiController {
     public RestResponse<UserResponseVM> select(@PathVariable Integer id) {
         User user = userService.getUserById(id);
         UserResponseVM userVm = UserResponseVM.from(user);
+        if (!user.getUserName().equals("goodadmin")){
+            userVm.setPassword(RsaUtil.rsaDecode(systemConfig.getPwdKey().getPrivateKey(),user.getPassword()));
+        }else{
+            userVm.setPassword("");
+        }
         return RestResponse.ok(userVm);
     }
 
@@ -159,7 +169,6 @@ public RestResponse batchInsert(@RequestBody @Valid List<UserCreateVM> models) {
         .map(model -> {
             User user = modelMapper.map(model, User.class);
             user.setUserName(model.getUserName());
-            System.out.println(model.getUserName());
             user.setPassword(authenticationService.pwdEncode(model.getPassword()));
             user.setUserUuid(UUID.randomUUID().toString());
             user.setRole(RoleEnum.STUDENT.getCode());

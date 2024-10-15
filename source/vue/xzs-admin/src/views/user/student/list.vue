@@ -22,7 +22,9 @@
           <span style="color: red;">请注意相同用户名的身份证号信息会覆盖！</span>
         </div>
       </el-upload>
-      <span slot="footer" class="dialog-footer">
+      <a href="http://129.204.20.76/assets/template/userinfo.xlsx" download="用户模板.xlsx">
+        <el-button size="small" type="success">下载模板</el-button>
+      </a> <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
       </span>

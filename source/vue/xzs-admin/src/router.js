@@ -102,17 +102,31 @@ const constantRoutes = [
         meta: { title: '题目列表', noCache: true }
       },
       {
-        path: 'question/edit/singleChoice',
+        path: 'question/edit/singleChoice10',
         component: () => import('@/views/exam/question/edit/single-choice'),
         name: 'singleChoicePage',
-        meta: { title: '单选题编辑', noCache: true, activeMenu: '/exam/question/list' },
+        meta: { title: '最佳选择题编辑', noCache: true, activeMenu: '/exam/question/list' },
         hidden: true
       },
       {
-        path: 'question/edit/multipleChoice',
+        path: 'question/edit/singleChoice11',
+        component: () => import('@/views/exam/question/edit/single-choice'),
+        name: 'singleChoicePage',
+        meta: { title: '配伍选择题编辑', noCache: true, activeMenu: '/exam/question/list' },
+        hidden: true
+      },
+      {
+        path: 'question/edit/singleChoice12',
+        component: () => import('@/views/exam/question/edit/single-choice'),
+        name: 'singleChoicePage',
+        meta: { title: '综合分析选择题编辑', noCache: true, activeMenu: '/exam/question/list' },
+        hidden: true
+      },
+      {
+        path: 'question/edit/multipleChoice20',
         component: () => import('@/views/exam/question/edit/multiple-choice'),
         name: 'multipleChoicePage',
-        meta: { title: '多选题编辑', noCache: true, activeMenu: '/exam/question/list' },
+        meta: { title: '多项选择题编辑', noCache: true, activeMenu: '/exam/question/list' },
         hidden: true
       },
       {

@@ -25,7 +25,7 @@
         <el-button type="primary" @click="dialogVisible = true">批量上传</el-button>
         <el-popover placement="bottom" trigger="click">
           <el-button type="warning" size="mini" v-for="item in editUrlEnum" :key="item.key"
-            @click="$router.push({ path: item.value, query: { questionType: item.key } })">{{ item.name }}
+            @click="$router.push({ path: item.value+item.key, query: { questionType: item.key } })">{{ item.name }}
           </el-button>
           <el-button slot="reference" type="primary" class="link-left">添加</el-button>
         </el-popover>
@@ -35,16 +35,18 @@
       <el-upload class="upload-demo" action="" :on-change="handleChange" :auto-upload="false" :on-remove="handleRemove"
         :limit="1" :file-list="fileList" accept=".xls, .xlsx">
         <el-button size="small" type="primary">点击上传</el-button>
-        <!-- <el-button size="small" type="success" @click="downloadTemplate">下载模板</el-button> -->
         <div slot="tip" class="el-upload__tip" style="line-height: 1.5;">
           只能上传xls/xlsx文件，且每个文件最大500kb,<br />
           <span style="color: red; text-align: center;">
             每次上传数据都会新增数据，不会覆盖之前的数据！<br />
-            单选题：只需要填ABCD四个选项，正确答案，请填一个<br />
-            多选题：ABCD四个选项必填，EF选项选填，正确答案有多个请用逗号分割<br />
+            单选题：按照A到F顺序填选项，正确答案请填一个！<br />
+            多选题：按照A到F顺序填选项，正确答案有多个请用逗号分割！<br />
           </span>
         </div>
       </el-upload>
+      <a href="http://129.204.20.76/assets/template/question.xlsx" download="题目模板.xlsx">
+        <el-button size="small" type="success">下载模板</el-button>
+      </a>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
@@ -146,7 +148,7 @@ export default {
     },
     editQuestion (row) {
       let url = this.enumFormat(this.editUrlEnum, row.questionType)
-      this.$router.push({ path: url, query: { id: row.id } })
+      this.$router.push({ path: url + row.questionType, query: { id: row.id } })
     },
     deleteQuestion (row) {
       let _this = this
@@ -203,7 +205,7 @@ export default {
             correct: correctVal,
             correctArray: correctArrayVal,
             items: items,
-            score: 3,
+            score: Number(row['题目分数']) ? Number(row['题目分数']) : 3,
             difficult: 3,
             analyze: ''
           }

@@ -6,6 +6,9 @@
           <el-option v-for="item in subjects" :key="item.id" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="用户名：">
+        <el-input v-model="queryParam.userName"></el-input>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">查询</el-button>
       </el-form-item>

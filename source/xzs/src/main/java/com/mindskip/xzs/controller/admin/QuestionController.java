@@ -124,7 +124,7 @@ public class QuestionController extends BaseApiController {
                 .findFirst()
                 .orElse(null);
             if (tmpSubject == null) {
-                String errorMsg = "科目 " + model.getSubjectName() + " 和级别 "+model.getGradeLevelName()+" 不匹配";
+                String errorMsg = "学科 " + model.getSubjectName() + " 和级别 "+model.getGradeLevelName()+" 不匹配，去学科列表查看对应关系！";
                 return new RestResponse<>(SystemCode.ParameterValidError.getCode(), errorMsg);
             }
             int subjectId = tmpSubject.getId();

@@ -343,7 +343,7 @@
     (#{item.userUuid}::uuid, #{item.userName}, #{item.password},#{item.createTime,jdbcType=TIMESTAMP},
      #{item.modifyTime,jdbcType=TIMESTAMP},#{item.deleted,jdbcType=BIT},#{item.status,jdbcType=INTEGER},#{item.role,jdbcType=INTEGER})
   </foreach>
-  ON CONFLICT (user_name) DO UPDATE SET
+  ON CONFLICT (user_name,deleted) DO UPDATE SET
   password = EXCLUDED.password,
   modify_time= EXCLUDED.modify_time,
   status=EXCLUDED.status
