@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @version 3.5.0
- * @description:  学之思应用启动
+ * @description:  德古应用启动
  *
  * @date 2021/12/25 9:45
  */
