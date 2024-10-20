@@ -104,7 +104,7 @@ public class SecurityConfigurer {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             final CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setMaxAge(60L);
+            configuration.setMaxAge(3600L);
             configuration.setAllowedOrigins(Collections.singletonList("*"));
             configuration.setAllowedMethods(Collections.singletonList("*"));
             configuration.setAllowCredentials(true);

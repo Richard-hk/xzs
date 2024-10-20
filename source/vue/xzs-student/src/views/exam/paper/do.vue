@@ -389,14 +389,14 @@ export default {
       const uncompletedItems = this.answer.answerItems.filter(item => !item.completed)
       if (uncompletedItems.length > 0 && timeout === false) {
         this.$alert('还有' + uncompletedItems.length + '道未完成的题目，请先完成后再提交', '提示', {
-          confirmButtonText: '确定',
+          confirmButtonText: '直接提交',
           showCancelButton: true,
-          cancelButtonText: '直接提交',
+          cancelButtonText: '取消',
           callback: (action) => {
             if (action === 'confirm') {
-              this.formLoading = false // 用户选择“确定”
+              this.directSubmit()
             } else if (action === 'cancel') {
-              this.directSubmit() // 用户选择 “直接提交”
+              this.formLoading = false
             }
           }
         })

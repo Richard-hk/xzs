@@ -148,6 +148,10 @@ public class UserController extends BaseApiController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public RestResponse delete(@PathVariable Integer id) {
         User user = userService.getUserById(id);
+        long currentTimeMillis = System.currentTimeMillis();
+        // 转换为秒级时间戳
+        long currentTimestampInSeconds = currentTimeMillis / 1000;
+        user.setUserName(user.getUserName()+"_deleted_"+currentTimestampInSeconds);
         user.setDeleted(true);
         userService.updateByIdFilter(user);
         return RestResponse.ok();
