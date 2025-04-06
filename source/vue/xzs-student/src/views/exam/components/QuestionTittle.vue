@@ -1,17 +1,17 @@
 <template>
   <div style="line-height: 2" :style="computedStyle">
     <div v-if="qType == 10 || qType==11 || qType==12" v-loading="qLoading" class="question-layout">
-      <div class="q-title" v-html="question.title"></div>
+      <div class="q-title" ref="qTitle" v-html="question.title" @mouseup="highlightText"></div>
     </div>
     <div v-if="qType == 20" v-loading="qLoading" class="question-layout">
-      <div class="q-title" v-html="question.title"></div>
+      <div class="q-title" ref="qTitle" v-html="question.title" @mouseup="highlightText"></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'QuestionShow',
+  name: 'QuestionTittle',
   props: {
     question: {
       type: Object,
@@ -32,7 +32,29 @@ export default {
       default: 1
     }
   },
+  data() {
+    return {
+      selectText: ''
+    }
+  },
   methods: {
+    highlightText() {
+      this.selectText = ''
+      const selectedText = window.getSelection().toString()
+      this.selectText = selectedText
+    },
+    highlight() {
+      if (this.selectText) {
+        this.question.title = this.question.title.replace('<span style="background-color: yellow;display: inline-block;">', '')
+        this.question.title = this.question.title.replace('</span>', '')
+        this.question.title = this.question.title.replace(this.selectText, `<span style="background-color: yellow;display: inline-block;">${this.selectText}</span>`)
+        this.selectText = ''
+      }
+    },
+    unhighlight() {
+      this.question.title = this.question.title.replace('<span style="background-color: yellow;display: inline-block;">', '')
+      this.question.title = this.question.title.replace('</span>', '')
+    }
   },
   computed: {
     computedStyle() {

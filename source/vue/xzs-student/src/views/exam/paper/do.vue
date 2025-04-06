@@ -77,58 +77,65 @@
         <el-main style="height: 100% ;padding: 10px;">
           <div
             style=" position: sticky; top: 0; background: white; z-index: 1; border-bottom: 1px solid #dcdfe6;padding-bottom: 10px; ">
-            <el-row style=" line-height: 1.5;">{{ index_tag_show }}</el-row>
+            <el-row style=" line-height: 1.5;">{{ index_tag_show }}
+              <el-button type="primary" @click="colStyle" plain style="font-size: 16px; margin-left: 10px;">
+                {{ isLeftRightVisiable ? '上下显示' : '左右显示' }}
+              </el-button>
+              <el-button type="primary" @click="changeStyle" plain style="font-size: 16px; margin-left: 10px;">
+                {{ isHighlighted ? '取消强调' : '强调显示' }}
+              </el-button>
+            </el-row>
           </div>
           <el-row style="height:calc(100% - 60px);  ">
 
-            <el-col :span="24" v-if="!isHeaderLeftVisiable"
-              style="height: 50%; overflow: auto;  border-bottom: 1px solid #dcdfe6;">
-              <el-form :model="form" ref="form" v-loading="formLoading">
-                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                  <div class="parent-container">
-                    <QuestionTittle :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                      :scale="scale" />
-                  </div>
-                </el-form-item>
-              </el-form>
-            </el-col>
-            <el-col v-else :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
-              <el-form :model="form" ref="form" v-loading="formLoading">
-                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                  <div class="parent-container">
-                    <QuestionTittle :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                      :scale="scale" />
-                  </div>
-                </el-form-item>
-              </el-form>
-            </el-col>
+            <el-col :span="24" v-if="!isHeaderLeftVisiable || !isLeftRightVisiable"
+            style="height: 50%; overflow: auto; border-bottom: 1px solid #dcdfe6;">
+            <el-form :model="form" ref="form" v-loading="formLoading">
+              <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                <div class="parent-container">
+                  <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                    :scale="scale" />
+                </div>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col v-else :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
+            <el-form :model="form" ref="form" v-loading="formLoading">
+              <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                <div class="parent-container">
+                  <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                    :scale="scale" />
+                </div>
+              </el-form-item>
+            </el-form>
+          </el-col>
 
-            <el-col :span="24" v-if="!isHeaderLeftVisiable" style="height: 50%; overflow: auto;">
-              <el-form :model="form" ref="form" v-loading="formLoading">
-                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                  <div class="parent-container">
-                    <QuestionSelect :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                      :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
-                  </div>
-                </el-form-item>
-              </el-form>
-            </el-col>
+        <el-col :span="24" v-if="!isHeaderLeftVisiable ||!isLeftRightVisiable" style="height: 50%; overflow: auto;">
+          <el-form :model="form" ref="form" v-loading="formLoading">
+            <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+              class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+              <div class="parent-container">
+                <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                  :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
+              </div>
+            </el-form-item>
+          </el-form>
+        </el-col>
 
-            <el-col v-else :span="12" style="height: 100%; overflow: auto;">
-              <el-form :model="form" ref="form" v-loading="formLoading">
-                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                  <div class="parent-container">
-                    <QuestionSelect :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                      :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
-                  </div>
-                </el-form-item>
-              </el-form>
-            </el-col>
-          </el-row>
+        <el-col v-else :span="12" style="height: 100%; overflow: auto;">
+          <el-form :model="form" ref="form" v-loading="formLoading">
+            <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+              class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+              <div class="parent-container">
+                <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType" :question="currentTitleItem"
+                  :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
+              </div>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
         </el-main>
 
         <el-footer style="height: 48px;  background-color: #f2f2f2;">
@@ -157,7 +164,7 @@
               <el-button @click="previousQuestion" style="font-size: 16px;">上一题</el-button>
               <el-button type="primary" @click="nextQuestion" style="font-size: 16px">下一题</el-button>
             </div>
-            <div style="display: flex;" :style="{marginTop: isFooterVisiable ? '0px' : '20px'}">
+            <div style="display: flex;" :style="{ marginTop: isFooterVisiable ? '0px' : '20px' }">
               <el-button type="warning" @click="zoomOut" plain style="font-size: 16px">缩小</el-button>
               <el-button type="warning" @click="zoomIn" plain style="font-size: 16px">放大</el-button>
               <el-button type="warning" @click="markQuestion" plain style="font-size: 16px">
@@ -166,7 +173,7 @@
                   'el-icon-star-on': this.answer.answerItems[this.activeQuestionIndex]?.marked
                 }"></i>
                 {{ this.answer.answerItems[this.activeQuestionIndex]?.marked ? '取消' : '标记' }}
-                </el-button>
+              </el-button>
               <el-button v-if="isHeaderLeftVisiable" type="warning" @click="showCalculator" plain
                 style="font-size: 16px">计算器</el-button>
 
@@ -238,29 +245,34 @@ export default {
       },
       scale: 1,
       exam_id: null,
+      userExamIdStartTimeKey: null,
       userExamIdStartTime: null,
       userExamIdData: null,
       autoNextExam: false,
       suggestTime: 0,
       userExamId: null,
       isHeaderLeftVisiable: true,
+      isLeftRightVisiable: true,
       isFooterVisiable: true,
       isAsideVisible: true,
       windowWidth: window.innerWidth,
       groupedAnswerItems: [],
       index_tag_show: '',
       questionTypeOrder: [],
-      totalCount: 0
+      totalCount: 0,
+      isHighlighted: false
     }
   },
   created() {
     this.exam_id = this.$route.query.id
     if (this.exam_id && parseInt(this.exam_id) !== 0) {
       this.userExamId = this.userName + '_' + this.$route.query.id
-      this.userExamIdStartTime = this.userExamId + '_remainTime'
+      this.userExamIdStartTimeKey = this.userExamId + '_remainTime'
       this.userExamIdData = this.userExamId + '_examData'
-      if (!localStorage.getItem(this.userExamIdStartTime)) {
-        localStorage.setItem(this.userExamIdStartTime, this.getCurrentTimestamp())
+      if (!localStorage.getItem(this.userExamIdStartTimeKey)) {
+        const currentTime = this.getCurrentTimestamp()
+        localStorage.setItem(this.userExamIdStartTimeKey, currentTime)
+        this.userExamIdStartTime = currentTime
       }
       this.formLoading = true
       examPaperApi.select(this.exam_id).then(re => {
@@ -314,10 +326,9 @@ export default {
         this.activeQuestionIndex = activeQuestionIndex
         this.answer.answerItems = answerItems
       }
-      const savedStartTime = localStorage.getItem(this.userExamIdStartTime)
-      if (savedStartTime) {
-        const startTime = parseInt(savedStartTime, 10)
-
+      this.userExamIdStartTime = localStorage.getItem(this.userExamIdStartTimeKey)
+      if (this.userExamIdStartTime) {
+        const startTime = parseInt(this.userExamIdStartTime, 10)
         this.remainTime = startTime + this.suggestTime - this.getCurrentTimestamp()
       }
     },
@@ -327,17 +338,28 @@ export default {
     timeReduce() {
       this.timer = setInterval(() => {
         if (this.remainTime <= 0) {
+          clearInterval(this.timer)
           this.submitForm(true)
         } else {
-          ++this.answer.doTime
-          --this.remainTime
+          const startTime = parseInt(this.userExamIdStartTime, 10)
+          this.remainTime = this.suggestTime + startTime - this.getCurrentTimestamp()
+          this.answer.doTime = this.getCurrentTimestamp() - startTime
         }
       }, 1000)
+    },
+    beforeDestroy() {
+    // 清除定时器，避免内存泄漏
+      clearInterval(this.timer)
     },
     questionCompleted(completed) {
       return this.enumFormat(this.doCompletedTag, completed)
     },
     setActiveQuestion(index) {
+      if (index !== this.activeQuestionIndex) {
+        this.isHighlighted = false
+        this.$refs.questionTittle.unhighlight()
+        this.$refs.questionSelect.unhighlight()
+      }
       if (index < 0 || index >= this.answer.answerItems.length) {
         return
       }
@@ -409,7 +431,7 @@ export default {
       this.answer.id = this.form.id
       examPaperAnswerApi.answerSubmit(this.answer).then(re => {
         if (re.code === 1) {
-          localStorage.removeItem(this.userExamIdStartTime)
+          localStorage.removeItem(this.userExamIdStartTimeKey)
           localStorage.removeItem(this.userExamIdData)
           this.$router.replace('/finish')
         } else {
@@ -528,6 +550,19 @@ export default {
       this.isAsideVisible = this.windowWidth > 768 // 自定义宽度
       this.isHeaderLeftVisiable = this.windowWidth > 768 // 自定义宽度
       this.isFooterVisiable = this.windowWidth > 480 // 自定义宽度
+    },
+    changeStyle() {
+      this.isHighlighted = !this.isHighlighted
+      if (this.isHighlighted) {
+        this.$refs.questionTittle.highlight()
+        this.$refs.questionSelect.highlight()
+      } else {
+        this.$refs.questionTittle.unhighlight()
+        this.$refs.questionSelect.unhighlight()
+      }
+    },
+    colStyle() {
+      this.isLeftRightVisiable = !this.isLeftRightVisiable
     }
   },
   computed: {

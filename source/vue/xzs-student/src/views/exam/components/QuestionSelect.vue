@@ -2,16 +2,16 @@
   <div style="line-height: 2" :style="computedStyle">
     <div v-if="qType == 10 || qType == 11 || qType ==12" v-loading="qLoading" class="question-layout">
       <div class="q-content">
-        <div v-for="item in question.items" :key="item.prefix" style="margin-bottom: 10px;">
+        <div v-for="(item, index) in question.items" :key="item.prefix" style="margin-bottom: 10px;" ref="questionSelect" @mouseup="highlightText(index)">
           <span class="question-prefix">{{ item.prefix }}</span>
-          <span v-html="item.content" class="q-item-span-content"></span>
+          <span v-html="item.content" class="q-item-span-content" ></span>
         </div>
       </div>
     </div>
     <div v-if="qType == 20" v-loading="qLoading" class="question-layout">
       <div class="q-content" style="text-align: left;">
-        <div v-for="item in question.items" :key="item.prefix" style="margin-bottom: 10px;">
-          <span class="question-prefix">{{ item.prefix }}</span>
+        <div v-for="(item, index) in question.items" :key="item.prefix" style="margin-bottom: 10px;" ref="questionSelect" @mouseup="highlightText(index)">
+          <span class="question-prefix" >{{ item.prefix }}</span>
           <span v-html="item.content" class="q-item-span-content"></span>
         </div>
       </div>
@@ -47,9 +47,36 @@ export default {
       type: Number,
       default: 1
     }
-
+  },
+  data() {
+    return {
+      highlightedTitle: this.question.title,
+      highIndex: null,
+      selectText: '',
+      hightStyle: '<span style="background-color: yellow;display: inline-block;">',
+      hightStyle1: '</span>'
+    }
   },
   methods: {
+    highlightText(index) {
+      this.highIndex = index
+      const selectedText = window.getSelection().toString()
+      this.selectText = selectedText
+    },
+    highlight() {
+      if (this.selectText) {
+        this.question.items[this.highIndex].content = this.question.items[this.highIndex].content.replace(this.selectText, this.hightStyle + this.selectText + this.hightStyle1)
+        this.selectText = ''
+      }
+    },
+    unhighlight() {
+      if (this.highIndex !== null) {
+        for (let i = 0; i < this.question.items.length; i++) {
+          this.question.items[i].content = this.question.items[i].content.replace(this.hightStyle, '')
+          this.question.items[i].content = this.question.items[i].content.replace(this.hightStyle1, '')
+        }
+      }
+    }
   },
   computed: {
     computedStyle() {

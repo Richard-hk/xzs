@@ -1,0 +1,1 @@
+npm run build &&  rm -rf ../../../goodrelease/web/admin/&& mv admin ../../../goodrelease/web/

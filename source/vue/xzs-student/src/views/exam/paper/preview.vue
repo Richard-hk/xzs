@@ -6,7 +6,7 @@
                     <div class="top">
                         <div class="exam-layout">
                             <div class="user-info">
-                                <p>姓名：XXX</p>
+                                <p>姓名：xxx</p>
                                 <p>准考证号：{{ userName }}</p>
                                 <p>证件号：xxxxxxxxxxxxxxx</p>
                             </div>

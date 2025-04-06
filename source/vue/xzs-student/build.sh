@@ -1,0 +1,1 @@
+npm run build &&  rm -rf ../../../goodrelease/web/student/&& mv student ../../../goodrelease/web/
