@@ -1,14 +1,14 @@
 <template>
     <div class="exam-page" style="height: 100vh;">
         <el-row>
-            <el-col :span="16" :offset="4" style="height: 100%;">
+          <el-col :span="computedCol.span" :offset="computedCol.offset" style="height: 100%;">
                 <el-card class="exam-card" style="padding: 0; height: 100%;">
                     <div class="top">
                         <div class="exam-layout">
                             <div class="user-info">
                                 <p>姓名：xxx</p>
                                 <p>准考证号：{{ userName }}</p>
-                                <p>证件号：xxxxxxxxxxxxxxx</p>
+                                <p>证件号：xxxxxx</p>
                             </div>
                             <div class="exam-info">
                                 <p>考试类型：正常考试</p>
@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="content" v-if="activeTab === 'rules'"
-                        style="overflow-y: auto; height: calc(100vh - 260px); line-height: 1.5; ">
+                        style="overflow-y: auto; height: calc(100vh - 300px); line-height: 1.5; ">
                         <h4 style="text-align: center;">考场规则</h4>
                         <p></p>
                         <p>&emsp;&emsp;现提醒应试人员遵守以下规则：</p>
@@ -63,7 +63,7 @@
                         <p>&emsp;&emsp;十、考试违纪违规行为按照人力资源社会保障部《专业技术人员资格考试违纪违规行为处理规定》处理。</p>
                     </div>
 
-                    <div style="display: flex; justify-content: center; margin-top: 10px;">
+                    <div style="display: flex; justify-content: center; margin-top: 10px;height:46px">
                         <el-button type="primary"
                                    id="agree-button"
                                    :disabled="isButtonDisabled"
@@ -86,7 +86,8 @@ export default {
       timeLeft: 10,
       initialTime: 10,
       timer: null,
-      disabled: false
+      disabled: false,
+      windowWidth: window.innerWidth
     }
   },
   created() {
@@ -100,6 +101,13 @@ export default {
     ...mapGetters('user', ['userName']),
     isButtonDisabled() {
       return this.disabled
+    },
+    computedCol() {
+      if (this.windowWidth < 500) {
+        return { span: 22, offset: 1 }
+      } else {
+        return { span: 16, offset: 4 }
+      }
     }
   },
   methods: {
@@ -124,13 +132,18 @@ export default {
           }
         }
       }, 1000)
+    },
+    handleResize() {
+      this.windowWidth = window.innerWidth
     }
   },
   mounted() {
     this.startCountdown()
+    window.addEventListener('resize', this.handleResize)
   },
   beforeDestroy() {
     clearInterval(this.timer)
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
@@ -165,6 +178,7 @@ export default {
     /* 在子项之间留出空间 */
     align-items: center;
     /* 垂直居中子项 */
+    height:150px
 }
 
 .progress-bar {

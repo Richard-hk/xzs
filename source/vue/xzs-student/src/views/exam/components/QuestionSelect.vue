@@ -1,7 +1,7 @@
 <template>
   <div style="line-height: 2" :style="computedStyle">
     <div v-if="qType == 10 || qType == 11 || qType ==12" v-loading="qLoading" class="question-layout">
-      <div class="q-content">
+      <div class="q-content" style="margin-left: 10px;">
         <div v-for="(item, index) in question.items" :key="item.prefix" style="margin-bottom: 10px;" ref="questionSelect" @mouseup="highlightText(index)">
           <span class="question-prefix">{{ item.prefix }}</span>
           <span v-html="item.content" class="q-item-span-content" ></span>
@@ -9,7 +9,7 @@
       </div>
     </div>
     <div v-if="qType == 20" v-loading="qLoading" class="question-layout">
-      <div class="q-content" style="text-align: left;">
+      <div class="q-content" style="text-align: left; margin-left: 10px;">
         <div v-for="(item, index) in question.items" :key="item.prefix" style="margin-bottom: 10px;" ref="questionSelect" @mouseup="highlightText(index)">
           <span class="question-prefix" >{{ item.prefix }}</span>
           <span v-html="item.content" class="q-item-span-content"></span>

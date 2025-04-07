@@ -18,10 +18,10 @@
           </div>
         </el-col>
         <el-col :style="{ width: isHeaderLeftVisiable ? 'calc(100% - 250px)' : '100%' }">
-          <div style="display: flex;align-items: center;">
+          <div v-if="isHeaderLeftVisiable" style="display: flex;align-items: center;">
             <div>
               <span class="header-padding" style="margin-left: 10px; font-size: 20px; font-weight: bold;">{{ form.name
-                }}</span>
+              }}</span>
             </div>
             <div v-if="isHeaderLeftVisiable"
               style="margin-left: auto;margin-right: 0; font-size: 14px;font-weight: bold;">
@@ -41,6 +41,32 @@
             <el-button type="danger" @click="submitForm(false)"
               :style="{ marginRight: isHeaderLeftVisiable ? '35px' : '2px' }"
               style=" height:50px; font-size: 20px;">提交</el-button>
+          </div>
+          <div v-else>
+            <div style="display: flex; flex-direction: column;">
+              <div style="width: 100%;">
+                <span class="header-padding"
+                  style=" font-size: 20px; font-weight: bold; text-align: center; display: block; line-height: 1.3; ">
+                  {{ form.name }}
+                </span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-left: 10px; margin-bottom: 10px; padding: 0;">
+                <div style="font-size: 10px; font-weight: bold;">
+                  <p>考试时间：{{ form.suggestTime }}分钟</p>
+                  <p>
+                    <label>剩余时间：</label>
+                    <label :class="{
+                      'remain-time-red': remainTime < this.suggestTime * 0.25,
+                    }">{{ formatSeconds(remainTime) }}</label>
+                  </p>
+                </div>
+                <el-button type="danger" @click="submitForm(false)"
+                  style="height: 30px; font-size: 10px; margin-right: 25px;">
+                  提交
+                </el-button>
+              </div>
+            </div>
           </div>
         </el-col>
       </el-row>
@@ -78,10 +104,12 @@
           <div
             style=" position: sticky; top: 0; background: white; z-index: 1; border-bottom: 1px solid #dcdfe6;padding-bottom: 10px; ">
             <el-row style=" line-height: 1.5;">{{ index_tag_show }}
-              <el-button type="primary" @click="colStyle" plain style="font-size: 16px; margin-left: 10px;">
+              <el-button v-if="isHeaderLeftVisiable" type="primary" @click="colStyle" plain
+                style="font-size: 16px; margin-left: 10px;">
                 {{ isLeftRightVisiable ? '上下显示' : '左右显示' }}
               </el-button>
-              <el-button type="primary" @click="changeStyle" plain style="font-size: 16px; margin-left: 10px;">
+              <el-button v-if="isHeaderLeftVisiable" type="primary" @click="changeStyle" plain
+                style="font-size: 16px; margin-left: 10px;">
                 {{ isHighlighted ? '取消强调' : '强调显示' }}
               </el-button>
             </el-row>
@@ -89,53 +117,55 @@
           <el-row style="height:calc(100% - 60px);  ">
 
             <el-col :span="24" v-if="!isHeaderLeftVisiable || !isLeftRightVisiable"
-            style="height: 50%; overflow: auto; border-bottom: 1px solid #dcdfe6;">
-            <el-form :model="form" ref="form" v-loading="formLoading">
-              <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                <div class="parent-container">
-                  <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                    :scale="scale" />
-                </div>
-              </el-form-item>
-            </el-form>
-          </el-col>
-          <el-col v-else :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
-            <el-form :model="form" ref="form" v-loading="formLoading">
-              <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-                class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-                <div class="parent-container">
-                  <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                    :scale="scale" />
-                </div>
-              </el-form-item>
-            </el-form>
-          </el-col>
+              style="height: 50%; overflow: auto; border-bottom: 1px solid #dcdfe6;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType"
+                      :question="currentTitleItem" :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+            <el-col v-else :span="12" style="height: 100%; overflow: auto; border-right: 1px solid #dcdfe6;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionTittle ref="questionTittle" :qType="currentTitleItem.questionType"
+                      :question="currentTitleItem" :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
 
-        <el-col :span="24" v-if="!isHeaderLeftVisiable ||!isLeftRightVisiable" style="height: 50%; overflow: auto;">
-          <el-form :model="form" ref="form" v-loading="formLoading">
-            <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-              class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-              <div class="parent-container">
-                <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                  :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
-              </div>
-            </el-form-item>
-          </el-form>
-        </el-col>
+            <el-col :span="24" v-if="!isHeaderLeftVisiable || !isLeftRightVisiable" style="height: 50%; overflow: auto;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType"
+                      :question="currentTitleItem" :answer="answer.answerItems[currentTitleItem.itemOrder - 1]"
+                      :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
 
-        <el-col v-else :span="12" style="height: 100%; overflow: auto;">
-          <el-form :model="form" ref="form" v-loading="formLoading">
-            <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
-              class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
-              <div class="parent-container">
-                <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType" :question="currentTitleItem"
-                  :answer="answer.answerItems[currentTitleItem.itemOrder - 1]" :scale="scale" />
-              </div>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
+            <el-col v-else :span="12" style="height: 100%; overflow: auto;">
+              <el-form :model="form" ref="form" v-loading="formLoading">
+                <el-form-item v-if="activeQuestionIndex !== null && currentTitleItem && form.titleItems.length"
+                  class="exam-question-item" :id="'question-' + currentTitleItem.itemOrder">
+                  <div class="parent-container">
+                    <QuestionSelect ref="questionSelect" :qType="currentTitleItem.questionType"
+                      :question="currentTitleItem" :answer="answer.answerItems[currentTitleItem.itemOrder - 1]"
+                      :scale="scale" />
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
         </el-main>
 
         <el-footer style="height: 48px;  background-color: #f2f2f2;">
@@ -148,13 +178,13 @@
           </el-form>
         </el-footer>
 
-        <el-footer style="height: 68px; padding: 16px 35px 16px 20px;">
+        <el-footer style="height: ''; padding: 16px 35px 16px 20px;">
           <div :style="{
             display: 'flex',
-            flexDirection: isFooterVisiable ? 'row' : 'column',
-            justifyContent: isFooterVisiable ? 'space-between' : 'flex-start',
+            flexDirection: isFooterVisiable ? 'row' : 'row',
+            justifyContent: isFooterVisiable ? 'space-between' : 'space-between',
           }">
-            <div style="display: flex; font-size: 40px;">
+            <div style="display: flex;" :style="{ marginTop: isFooterVisiable ? '0px' : '8px' }">
               <el-button type="primary" @click="hiddenAside" plain style="padding: 0px; font-size: 16px;">
                 <i :class="{
                   'el-icon-arrow-right': this.isAsideVisible == false,
@@ -164,9 +194,12 @@
               <el-button @click="previousQuestion" style="font-size: 16px;">上一题</el-button>
               <el-button type="primary" @click="nextQuestion" style="font-size: 16px">下一题</el-button>
             </div>
-            <div style="display: flex;" :style="{ marginTop: isFooterVisiable ? '0px' : '20px' }">
-              <el-button type="warning" @click="zoomOut" plain style="font-size: 16px">缩小</el-button>
-              <el-button type="warning" @click="zoomIn" plain style="font-size: 16px">放大</el-button>
+            <div style="display: flex;"
+              :style="{ marginTop: isFooterVisiable ? '0px' : '8px', marginLeft: isFooterVisiable ? '0px' : '8px' }">
+              <el-button v-if="isHeaderLeftVisiable" type="warning" @click="zoomOut" plain
+                style="font-size: 16px">缩小</el-button>
+              <el-button v-if="isHeaderLeftVisiable" type="warning" @click="zoomIn" plain
+                style="font-size: 16px">放大</el-button>
               <el-button type="warning" @click="markQuestion" plain style="font-size: 16px">
                 <i :class="{
                   'el-icon-star-off': this.answer.answerItems[this.activeQuestionIndex]?.marked == false,
@@ -348,7 +381,7 @@ export default {
       }, 1000)
     },
     beforeDestroy() {
-    // 清除定时器，避免内存泄漏
+      // 清除定时器，避免内存泄漏
       clearInterval(this.timer)
     },
     questionCompleted(completed) {

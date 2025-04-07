@@ -1,13 +1,13 @@
 <template>
   <div style="margin-top: 10px">
     <el-row>
-      <el-col :span="18" :offset="3">
+      <el-col :span="computedCol.span" :offset="computedCol.offset">
         <h3 class="index-title-h3">考试项目</h3>
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="18" :offset="3" v-for="(item, index) in fixedPaper" :key="index">
-        <el-card :body-style="{ padding: '0px' }" style="margin: 5px;" v-loading="loading">
+      <el-col :span="computedCol.span" :offset="computedCol.offset" v-for="(item, index) in fixedPaper" :key="index">
+        <el-card :body-style="{ padding: '0px',paddingRight: '8px'  }" style="margin: 5px;" v-loading="loading">
           <div class="flex-container">
             <img src="@/assets/exam-paper/show1.png" class="image" alt="考试图">
             <router-link class="router-link-no-underline" :to="{ path: '/login', query: { id: item.id,name:item.name } }">
@@ -32,7 +32,9 @@ export default {
       pushPaper: [],
       loading: false,
       // taskLoading: false,
-      taskList: []
+      taskList: [],
+      windowWidth: window.innerWidth
+
     }
   },
   created() {
@@ -57,6 +59,9 @@ export default {
     },
     statusTextFormatter(status) {
       return this.enumFormat(this.statusEnum, status)
+    },
+    handleResize() {
+      this.windowWidth = window.innerWidth
     }
   },
   computed: {
@@ -66,7 +71,20 @@ export default {
     ...mapState('enumItem', {
       statusEnum: state => state.exam.examPaperAnswer.statusEnum,
       statusTag: state => state.exam.examPaperAnswer.statusTag
-    })
+    }),
+    computedCol() {
+      if (this.windowWidth < 500) {
+        return { span: 22, offset: 1 }
+      } else {
+        return { span: 16, offset: 4 }
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
