@@ -264,6 +264,9 @@
       <if test="userName != null and userName !=''">
         and user_name = #{userName}
       </if>
+      <if test="examPaperId != null">
+        and exam_paper_id = #{examPaperId}
+      </if>
 
     </where>
   </select>

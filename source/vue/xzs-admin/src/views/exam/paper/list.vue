@@ -23,7 +23,7 @@
     </el-form>
     <el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%">
       <el-table-column prop="id" label="Id" width="90px"/>
-      <el-table-column prop="subjectId" label="学科" :formatter="subjectFormatter" width="120px" />
+      <el-table-column prop="subjectId" label="学科" :formatter="subjectFormatter" width="300px" />
       <el-table-column prop="name" label="名称"  />
       <el-table-column prop="status" label="状态" width="70px">
         <template slot-scope="{row}">

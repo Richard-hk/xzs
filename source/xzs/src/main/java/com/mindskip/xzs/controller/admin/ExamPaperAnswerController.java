@@ -54,6 +54,22 @@ public class ExamPaperAnswerController extends BaseApiController {
         });
         return RestResponse.ok(page);
     }
-
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public void Export(@RequestBody ExamPaperAnswerPageRequestVM model) {
+        PageInfo<ExamPaperAnswer> pageInfo = examPaperAnswerService.adminPage(model);
+        PageInfo<ExamPaperAnswerPageResponseVM> page = PageInfoHelper.copyMap(pageInfo, e -> {
+            ExamPaperAnswerPageResponseVM vm = modelMapper.map(e, ExamPaperAnswerPageResponseVM.class);
+            Subject subject = subjectService.selectById(vm.getSubjectId());
+            vm.setDoTime(ExamUtil.secondToVM(e.getDoTime()));
+            vm.setSystemScore(ExamUtil.scoreToVM(e.getSystemScore()));
+            vm.setUserScore(ExamUtil.scoreToVM(e.getUserScore()));
+            vm.setPaperScore(ExamUtil.scoreToVM(e.getPaperScore()));
+            vm.setSubjectName(subject.getName());
+            vm.setCreateTime(DateTimeUtil.dateFormat(e.getCreateTime()));
+            User user = userService.selectById(e.getCreateUser());
+            vm.setUserName(user.getUserName());
+            return vm;
+        });
+    }
 
 }
